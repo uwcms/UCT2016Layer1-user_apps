@@ -87,12 +87,32 @@ void *upload_thread(void *cb_threaddata) {
 			for (int ieta = 1; ieta <= 27; ieta += 2) {
 				linkdata_t &data = linkdata[neg*ieta];
 
-				card->setPlaybackBRAM(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::ECAL_Link_00 + (ieta-1)/2), data.ecal);
-				card->setPlaybackBRAM(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::HCAL_Link_00 + (ieta-1)/2), data.hcal);
+				if (!card->setPlaybackBRAM(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::ECAL_Link_00 + (ieta-1)/2), data.ecal)) {
+					printf("Error writing playback RAM for phi=%d ieta=%d\n", threaddata->phi, ieta);
+					threaddata->error = true;
+					delete card;
+					return NULL;
+				}
+				if (!card->setPlaybackBRAM(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::HCAL_Link_00 + (ieta-1)/2), data.hcal)) {
+					printf("Error writing playback RAM for phi=%d ieta=%d\n", threaddata->phi, ieta);
+					threaddata->error = true;
+					delete card;
+					return NULL;
+				}
 			}
 
-			card->setPlaybackBRAM(neg < 0, UCT2016Layer1CTP7::HF_Link_0, linkdata[neg*30].ecal /* hf_a */);
-			card->setPlaybackBRAM(neg < 0, UCT2016Layer1CTP7::HF_Link_1, linkdata[neg*30].hcal /* hf_b */);
+			if (!card->setPlaybackBRAM(neg < 0, UCT2016Layer1CTP7::HF_Link_0, linkdata[neg*30].ecal /* hf_a */)) {
+				printf("Error writing playback RAM for phi=%d ieta=%d\n", threaddata->phi, neg*30);
+				threaddata->error = true;
+				delete card;
+				return NULL;
+			}
+			if (!card->setPlaybackBRAM(neg < 0, UCT2016Layer1CTP7::HF_Link_1, linkdata[neg*30].hcal /* hf_b */)) {
+				printf("Error writing playback RAM for phi=%d ieta=%d\n", threaddata->phi, neg*30);
+				threaddata->error = true;
+				delete card;
+				return NULL;
+			}
 		}
 	}
 	catch (std::exception &e) {
