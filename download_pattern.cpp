@@ -40,17 +40,19 @@ void *download_thread(void *cb_threaddata) {
 	std::map<int, std::vector<uint32_t> > hcal;
 	std::map<int, std::vector<uint32_t> > hf; // use 1, 2.  -0 == 0.
 
+	std::map<bool, std::map<int, std::vector<uint32_t> > > output;
+
 	try {
 		for (int neg = -1; neg <= 1; neg += 2) {
 			for (int ieta = 1; ieta <= 27; ieta += 2) {
 				if (!card->getInputCaptureBRAM(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::ECAL_Link_00 + (ieta-1)/2), ecal[neg*ieta])) {
-					printf("Error reading capture RAM for phi=%d ieta=%d\n", threaddata->phi, ieta);
+					printf("Error reading input capture RAM for phi=%d ieta=%d\n", threaddata->phi, ieta);
 					threaddata->error = true;
 					delete card;
 					return NULL;
 				}
 				if (!card->getInputCaptureBRAM(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::HCAL_Link_00 + (ieta-1)/2), hcal[neg*ieta])) {
-					printf("Error reading capture RAM for phi=%d ieta=%d\n", threaddata->phi, ieta);
+					printf("Error reading input capture RAM for phi=%d ieta=%d\n", threaddata->phi, ieta);
 					threaddata->error = true;
 					delete card;
 					return NULL;
@@ -58,16 +60,25 @@ void *download_thread(void *cb_threaddata) {
 			}
 
 			if (!card->getInputCaptureBRAM(neg < 0, UCT2016Layer1CTP7::HF_Link_0, hf[neg*1] /* hf_a */)) {
-				printf("Error reading capture RAM for phi=%d HF_A\n", threaddata->phi);
+				printf("Error reading input capture RAM for phi=%d HF_A\n", threaddata->phi);
 				threaddata->error = true;
 				delete card;
 				return NULL;
 			}
 			if (!card->getInputCaptureBRAM(neg < 0, UCT2016Layer1CTP7::HF_Link_1, hf[neg*2] /* hf_b */)) {
-				printf("Error reading capture RAM for phi=%d HF_B\n", threaddata->phi);
+				printf("Error reading input capture RAM for phi=%d HF_B\n", threaddata->phi);
 				threaddata->error = true;
 				delete card;
 				return NULL;
+			}
+
+			for (int ol = 0; ol < 24; ++ol) {
+				if (!card->getOutputCaptureBRAM(neg < 0, static_cast<UCT2016Layer1CTP7::OutputLink>(UCT2016Layer1CTP7::Link_00 + ol), output[neg<0][ol])) {
+					printf("Error reading output capture RAM for phi=%d ol=%d\n", threaddata->phi, ol);
+					threaddata->error = true;
+					delete card;
+					return NULL;
+				}
 			}
 		}
 	}
@@ -83,7 +94,7 @@ void *download_thread(void *cb_threaddata) {
 		snprintf(filename, 64, "input_capture_Phi_%02u_Eta_%s.txt", threaddata->phi, (neg<0 ? "Minus" : "Plus"));
 		FILE *fd = fopen((pattern_path+"/"+filename).c_str(), "w");
 		if (!fd) {
-			printf("Writing output file %s\n", filename);
+			printf("Error writing output file %s\n", filename);
 			threaddata->error = true;
 			delete card;
 			return NULL;
@@ -99,6 +110,28 @@ void *download_thread(void *cb_threaddata) {
 			}
 			fprintf(fd, "0x%08x      ", hf[neg*1][word]);
 			fprintf(fd, "0x%08x\n",     hf[neg*2][word]);
+		}
+		fclose(fd);
+
+		////////////////////////////////////////////////////////////////////////
+
+		snprintf(filename, 64, "output_capture_Phi_%02u_Eta_%s.txt", threaddata->phi, (neg<0 ? "Minus" : "Plus"));
+		fd = fopen((pattern_path+"/"+filename).c_str(), "w");
+		if (!fd) {
+			printf("Error writing output file %s\n", filename);
+			threaddata->error = true;
+			delete card;
+			return NULL;
+		}
+		fprintf(fd, "Word#   BX0_riPhi0    BX0_riPhi2    BX1_riPhi0    BX1_riPhi2    BX2_riPhi0    BX2_riPhi2    BX3_riPhi0    BX3_riPhi2    BX4_riPhi0    BX4_riPhi2    BX5_riPhi0    BX5_riPhi2    BX6_riPhi0    BX6_riPhi2    BX7_riPhi0    BX7_riPhi2    BX8_riPhi0    BX8_riPhi2    BX9_riPhi0    BX9_riPhi2    BX10_riPhi0   BX10_riPhi2   BX11_riPhi0   BX11_riPhi2\n");
+		fprintf(fd, "=====================================================================================================================================================================================================================================================================================================================================================\n");
+
+		for (int word = 0; word < 1024; word++) {
+			fprintf(fd, "%5u   ", word);
+			for (int ol = 0; ol < 24; ++ol) {
+				fprintf(fd, "0x%08x    ", output[neg<0][ol][word]);
+			}
+			fprintf(fd, "\n");
 		}
 		fclose(fd);
 	}
