@@ -1,4 +1,4 @@
-CCOPTS = -ggdb
+CCOPTS = -ggdb -Wall
 
 all: upload_pattern download_pattern
 
