@@ -220,10 +220,10 @@ int main(int argc, char *argv[])
 
 		slice_link_status = p_link_status->link_stat_eta_neg;
 		print_link_detailed_status(phi, true, slice_link_status, L1_link_stat);
+
+		// We are done with return info from worker_thread[i]. Release memory allocated in the thread
+          	free(p_link_status);
 	}
-
-
-	free(p_link_status);
 
 	print_link_summary_status(L1_link_stat);
 
