@@ -45,13 +45,13 @@ void *download_thread(void *cb_threaddata) {
 	try {
 		for (int neg = -1; neg <= 1; neg += 2) {
 			for (int ieta = 1; ieta <= 27; ieta += 2) {
-				if (!card->getInputCaptureBRAM(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::ECAL_Link_00 + (ieta-1)/2), ecal[neg*ieta])) {
+				if (!card->getInputLinkBuffer(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::ECAL_Link_00 + (ieta-1)/2), ecal[neg*ieta])) {
 					printf("Error reading input capture RAM for phi=%d ieta=%d\n", threaddata->phi, ieta);
 					threaddata->error = true;
 					delete card;
 					return NULL;
 				}
-				if (!card->getInputCaptureBRAM(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::HCAL_Link_00 + (ieta-1)/2), hcal[neg*ieta])) {
+				if (!card->getInputLinkBuffer(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::HCAL_Link_00 + (ieta-1)/2), hcal[neg*ieta])) {
 					printf("Error reading input capture RAM for phi=%d ieta=%d\n", threaddata->phi, ieta);
 					threaddata->error = true;
 					delete card;
@@ -59,13 +59,13 @@ void *download_thread(void *cb_threaddata) {
 				}
 			}
 
-			if (!card->getInputCaptureBRAM(neg < 0, UCT2016Layer1CTP7::HF_Link_0, hf[neg*1] /* hf_a */)) {
+			if (!card->getInputLinkBuffer(neg < 0, UCT2016Layer1CTP7::HF_Link_0, hf[neg*1] /* hf_a */)) {
 				printf("Error reading input capture RAM for phi=%d HF_A\n", threaddata->phi);
 				threaddata->error = true;
 				delete card;
 				return NULL;
 			}
-			if (!card->getInputCaptureBRAM(neg < 0, UCT2016Layer1CTP7::HF_Link_1, hf[neg*2] /* hf_b */)) {
+			if (!card->getInputLinkBuffer(neg < 0, UCT2016Layer1CTP7::HF_Link_1, hf[neg*2] /* hf_b */)) {
 				printf("Error reading input capture RAM for phi=%d HF_B\n", threaddata->phi);
 				threaddata->error = true;
 				delete card;
@@ -73,7 +73,7 @@ void *download_thread(void *cb_threaddata) {
 			}
 
 			for (int ol = 0; ol < 24; ++ol) {
-				if (!card->getOutputCaptureBRAM(neg < 0, static_cast<UCT2016Layer1CTP7::OutputLink>(UCT2016Layer1CTP7::Link_00 + ol), output[neg<0][ol])) {
+				if (!card->getOutputLinkBuffer(neg < 0, static_cast<UCT2016Layer1CTP7::OutputLink>(UCT2016Layer1CTP7::Link_00 + ol), output[neg<0][ol])) {
 					printf("Error reading output capture RAM for phi=%d ol=%d\n", threaddata->phi, ol);
 					threaddata->error = true;
 					delete card;

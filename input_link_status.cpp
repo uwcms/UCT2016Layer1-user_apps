@@ -81,9 +81,6 @@ typedef struct link_summary_status
 
 } t_L1_link_stat;
 
-
-
-
 void print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016Layer1CTP7::LinkStatusSummary> slice_link_status, t_L1_link_stat & L1_link_stat );
 
 void print_link_summary_status(t_L1_link_stat L1_link_stat);
@@ -275,8 +272,8 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 
 	uint32_t rawLinkStatus;
 	uint32_t linkUp;
-	uint32_t linkRunning;
-	uint32_t linkAligned;
+	uint32_t linkLocked;
+	uint32_t linkGotAligned;
 	uint32_t checkSumErrorCount;
 	uint32_t bx0ErrorCount;
 	uint32_t bx0Latency;
@@ -285,8 +282,8 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 
 	std::string eta_side_str;
 	std::string link_up_str;
-	std::string link_running_str;
-	std::string link_aligned_str;
+	std::string link_locked_str;
+	std::string link_got_aligned_str;
 	std::string bx0_err_cnt_str;
 	std::string crc_err_cnt_str;
 	std::string align_mask_str;
@@ -301,15 +298,15 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 	}
 
 	printf("|------------------------------------------------------------------------------------------------------------------------------|\n");
-	printf("| Phi | Side |  Cal |  iEta | Status | BX0 Alignment | BX0 Latency | BX0 Err | CRC Err | Align Mask | TT Mask |  Raw Link Stat |\n");
+	printf("| Phi | Side |  Cal |  iEta | Status |   Got Aligned | BX0 Latency | BX0 Err | CRC Err | Align Mask | TT Mask |  Raw Link Stat |\n");
 	printf("|------------------------------------------------------------------------------------------------------------------------------|\n");
 
 	for (int i = 0; i < 32; i++)
 	{
 		rawLinkStatus      = slice_link_status[i].rawLinkStatus;
 		linkUp             = slice_link_status[i].linkUp;
-		linkRunning        = slice_link_status[i].linkRunning;
-		linkAligned        = slice_link_status[i].linkAligned;
+		linkLocked         = slice_link_status[i].linkLocked;
+		linkGotAligned     = slice_link_status[i].linkGotAligned;
 		checkSumErrorCount = slice_link_status[i].checkSumErrorCount;
 		bx0ErrorCount      = slice_link_status[i].bx0ErrorCount;
 		bx0Latency         = slice_link_status[i].bx0Latency;
@@ -324,7 +321,7 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 			{
 				L1_link_stat.EC_up_cnt++;
 			}
-			if (linkUp != 0 && linkRunning == 1)
+			if (linkUp != 0 && linkGotAligned == 1)
 			{
 				L1_link_stat.EC_aligned_err_cnt++;
 			}
@@ -347,7 +344,7 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 		{
 			L1_link_stat.HC_total_cnt++;
 			if (linkUp != 0) L1_link_stat.HC_up_cnt++;
-			if (linkUp != 0 && linkRunning == 1) L1_link_stat.HC_aligned_err_cnt++;
+			if (linkUp != 0 && linkGotAligned == 1) L1_link_stat.HC_aligned_err_cnt++;
 			if (alignmentMask != 0) L1_link_stat.HC_align_mask_cnt++;
 			if (bx0ErrorCount != 0) L1_link_stat.HC_bx0_err_cnt++;
 			if (checkSumErrorCount != 0) L1_link_stat.HC_checksum_err_cnt++;
@@ -358,7 +355,7 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 		{
 			L1_link_stat.HF_total_cnt++;
 			if (linkUp != 0) L1_link_stat.HF_up_cnt++;
-			if (linkUp != 0 && linkRunning == 1) L1_link_stat.HF_aligned_err_cnt++;
+			if (linkUp != 0 && linkGotAligned == 1) L1_link_stat.HF_aligned_err_cnt++;
 			if (alignmentMask != 0) L1_link_stat.HF_align_mask_cnt++;
 			if (bx0ErrorCount != 0) L1_link_stat.HF_bx0_err_cnt++;
 			if (checkSumErrorCount != 0) L1_link_stat.HF_checksum_err_cnt++;
@@ -374,13 +371,13 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 			link_up_str = "   UP ";
 		}
 
-		if (linkUp != 0 && linkRunning == 1)
+		if (linkUp != 0 && linkGotAligned == 1)
 		{
-			link_aligned_str = "      ALIGNED";
+			link_got_aligned_str = "      ALIGNED";
 		}
 		else
 		{
-			link_aligned_str = "  MIS-ALIGNED";
+			link_got_aligned_str = "  MIS-ALIGNED";
 		}
 
 		if (alignmentMask != 0 )
@@ -393,7 +390,7 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 		}
 
 		printf("|  %2d |    %s | %s | %s | %s |    %8.2f |  %6d |  %6d |  %s |   0x%03X |     0x%08x |\n",
-		       phi, eta_side_str.c_str(), Cal_iEta[i],  link_up_str.c_str(), link_aligned_str.c_str(),
+		       phi, eta_side_str.c_str(), Cal_iEta[i],  link_up_str.c_str(), link_got_aligned_str.c_str(),
 		       (float)bx0Latency / 6, bx0ErrorCount, checkSumErrorCount, align_mask_str.c_str(), towerMask, rawLinkStatus);
 	}
 

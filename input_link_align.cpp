@@ -13,8 +13,6 @@
 
 #define NUM_PHI 18
 
-std::string pattern_path;
-
 class ThreadData
 {
 public:
@@ -24,10 +22,7 @@ public:
 	ThreadData() : phi(0), error(false) { };
 };
 
-
-
-
-void *download_thread(void *cb_threaddata)
+void *worker_thread(void *cb_threaddata)
 {
 	ThreadData *threaddata = static_cast<ThreadData*>(cb_threaddata);
 
@@ -46,113 +41,49 @@ void *download_thread(void *cb_threaddata)
 
 	try
 	{
-
 		for (int neg = -1; neg <= 1; neg += 2)
 		{
 
-			if (!card->setAlignInputLinks(neg < 0, 3510 * 6))
+			if (!card->resetInputLinkDecoders(neg < 0))
 			{
-				printf("Error with TTC_Status for phi=%d\n", threaddata->phi);
+				printf("Error with resetInputLinkDecoders for phi=%d\n", threaddata->phi);
 				threaddata->error = true;
 				delete card;
 				return NULL;
 			}
 
-			for (int idx = 0; idx < 16; idx++)
+			if (!card->alignInputLinks(neg < 0, 3510, 0))
 			{
-
-				if (!card->checksumCounterReset(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::ECAL_Link_00 + idx) ))
-				{
-					printf("Error with TTC_Status for phi=%d\n", threaddata->phi);
-					threaddata->error = true;
-					delete card;
-					return NULL;
-				}
-
-
-				if (!card->bx0CounterReset(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::ECAL_Link_00 + idx)))
-				{
-					printf("Error with TTC_Status for phi=%d\n", threaddata->phi);
-					threaddata->error = true;
-					delete card;
-					return NULL;
-				}
-			}
-
-			for (int idx = 0; idx < 14; idx++)
-			{
-
-				if (!card->checksumCounterReset(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::HCAL_Link_00 + idx) ))
-				{
-					printf("Error with TTC_Status for phi=%d\n", threaddata->phi);
-					threaddata->error = true;
-					delete card;
-					return NULL;
-				}
-
-
-
-				if (!card->bx0CounterReset(neg < 0, static_cast<UCT2016Layer1CTP7::InputLink>(UCT2016Layer1CTP7::HCAL_Link_00 + idx)))
-				{
-					printf("Error with TTC_Status for phi=%d\n", threaddata->phi);
-					threaddata->error = true;
-					delete card;
-					return NULL;
-				}
-			}
-
-
-
-
-			if (!card->checksumCounterReset(neg < 0, UCT2016Layer1CTP7::HF_Link_0))
-			{
-				printf("Error with TTC_Status for phi=%d\n", threaddata->phi);
+				printf("Error with alignInputLinks for phi=%d\n", threaddata->phi);
 				threaddata->error = true;
 				delete card;
 				return NULL;
 			}
 
-
-			if (!card->bx0CounterReset(neg < 0, UCT2016Layer1CTP7::HF_Link_0))
+			if (!card->resetInputLinkChecksumErrorCounters(neg < 0))
 			{
-				printf("Error with TTC_Status for phi=%d\n", threaddata->phi);
+				printf("Error with resetInputLinkChecksumErrorCounters for phi=%d\n", threaddata->phi);
 				threaddata->error = true;
 				delete card;
 				return NULL;
 			}
 
-			if (!card->checksumCounterReset(neg < 0, UCT2016Layer1CTP7::HF_Link_1))
+			if (!card->resetInputLinkBX0ErrorCounters(neg < 0))
 			{
-				printf("Error with TTC_Status for phi=%d\n", threaddata->phi);
+				printf("Error with resetInputLinkBX0ErrorCounters for phi=%d\n", threaddata->phi);
 				threaddata->error = true;
 				delete card;
 				return NULL;
 			}
-
-
-			if (!card->bx0CounterReset(neg < 0, UCT2016Layer1CTP7::HF_Link_1))
-			{
-				printf("Error with TTC_Status for phi=%d\n", threaddata->phi);
-				threaddata->error = true;
-				delete card;
-				return NULL;
-			}
-
-
-
-
 		}
-
-
 	}
 	catch (std::exception &e)
 	{
-		printf("Error with input_playback_configuration from phi %d: %s\n", threaddata->phi, e.what());
+		printf("Error with input_link_align from phi %d: %s\n", threaddata->phi, e.what());
 		threaddata->error = true;
 		delete card;
 		return NULL;
 	}
-
 
 	delete card;
 	pthread_exit(NULL );
@@ -169,14 +100,12 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < NUM_PHI; i++)
 	{
 		threaddata[i].phi = i;
-		if (pthread_create(&threaddata[i].thread, NULL, download_thread, &threaddata[i]) != 0)
+		if (pthread_create(&threaddata[i].thread, NULL, worker_thread, &threaddata[i]) != 0)
 		{
 			printf("Couldnt launch thread for phi %d\n", i);
 			return 1;
 		}
 	}
-
-
 
 	for (int i = 0; i < NUM_PHI; i++)
 	{
@@ -187,10 +116,9 @@ int main(int argc, char *argv[])
 		}
 		else if (threaddata[i].error)
 		{
-			printf("hard reset from phi %d returned error.\n", i);
+			printf("input_link_align from phi %d returned error.\n", i);
 			ret = 1;
 		}
-
 		//free
 	}
 
