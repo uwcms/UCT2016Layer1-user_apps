@@ -11,7 +11,18 @@
 #include <UCT2016Layer1CTP7.hh>
 #include <map>
 
+#include "tinyxml2.h"
+
+using namespace tinyxml2;
+
+
 #define NUM_PHI 18
+
+typedef struct align_masks
+{
+	std::vector<uint32_t> mask_eta_pos;
+	std::vector<uint32_t> mask_eta_neg;
+} t_align_masks;
 
 class ThreadData
 {
@@ -19,8 +30,18 @@ public:
 	int phi;
 	bool error;
 	pthread_t thread;
+
+	uint32_t alignBX;
+	uint32_t alignSubBX;
+
+	t_align_masks align_masks;
+
 	ThreadData() : phi(0), error(false) { };
 };
+
+std::vector<t_align_masks> read_align_mask(void);
+
+
 
 void *worker_thread(void *cb_threaddata)
 {
@@ -47,6 +68,24 @@ void *worker_thread(void *cb_threaddata)
 			if (!card->resetInputLinkDecoders(neg < 0))
 			{
 				printf("Error with resetInputLinkDecoders for phi=%d\n", threaddata->phi);
+				threaddata->error = true;
+				delete card;
+				return NULL;
+			}
+
+			std::vector<uint32_t> mask;
+
+			if (neg < 0)
+			{
+				mask = threaddata->align_masks.mask_eta_neg;
+			}
+			else
+			{
+				mask = threaddata->align_masks.mask_eta_pos;
+			}
+			if (!card->setInputLinkAlignmentMask((neg < 0), mask))
+			{
+				printf("Error with setInputLinkAlignmentMask for phi=%d\n", threaddata->phi);
 				threaddata->error = true;
 				delete card;
 				return NULL;
@@ -97,9 +136,15 @@ int main(int argc, char *argv[])
 
 	int ret = 0;
 
+	std::vector<t_align_masks> align_masks;
+	
+	align_masks = read_align_mask();
+
 	for (int i = 0; i < NUM_PHI; i++)
 	{
 		threaddata[i].phi = i;
+		threaddata[i].align_masks = align_masks[i];
+
 		if (pthread_create(&threaddata[i].thread, NULL, worker_thread, &threaddata[i]) != 0)
 		{
 			printf("Couldnt launch thread for phi %d\n", i);
@@ -119,9 +164,61 @@ int main(int argc, char *argv[])
 			printf("input_link_align from phi %d returned error.\n", i);
 			ret = 1;
 		}
-		//free
+
+		free(ret_info[i]);
 	}
 
 	return ret;
+}
+
+
+std::vector<t_align_masks> read_align_mask(void)
+{
+	XMLDocument doc;
+	doc.LoadFile( "CTP7alignMask.xml" );
+
+	XMLElement * child;
+
+	std::vector<t_align_masks> align_masks;
+	t_align_masks align_masks_ele;
+
+	for ( child = doc.FirstChildElement( "layer1_align_mask_config" )->FirstChildElement("phi_config"); child; child = child->NextSiblingElement("phi_config") )
+	{
+		int phi;
+
+		XMLElement* phi_ele = child->FirstChildElement( "phi" );
+		phi_ele->QueryIntText( &phi );
+
+		XMLElement* alignMaskEtaPosEle = child->FirstChildElement( "alignMaskEtaPos" );
+		const char* alignMaskEtaPos = alignMaskEtaPosEle->GetText();
+
+		XMLElement* alignMaskEtaNegEle = child->FirstChildElement( "alignMaskEtaNeg" );
+		const char* alignMaskEtaNeg = alignMaskEtaNegEle->GetText();
+
+		uint32_t valPos;
+		uint32_t valNeg;
+
+		valPos = strtol(alignMaskEtaPos, NULL, 16);
+		valNeg = strtol(alignMaskEtaNeg, NULL, 16);
+
+		std::vector<uint32_t> mask_eta_pos (32, 0);
+		std::vector<uint32_t> mask_eta_neg (32, 0);
+
+
+		for (int idx = 0; idx < 32; idx++)
+	        {
+		      mask_eta_pos[idx] = (valPos >> idx) & 1;
+		      mask_eta_neg[idx] = (valNeg >> idx) & 1;
+		}
+
+		align_masks_ele.mask_eta_pos = mask_eta_pos;
+		align_masks_ele.mask_eta_neg = mask_eta_neg;
+
+		align_masks.push_back(align_masks_ele);
+
+		printf( " Phi: %02d   Alignment Mask Eta Pos: 0x%08x  Alignment Mask Eta Neg: 0x%08x \n", phi, valPos, valNeg );
+	}
+
+	return align_masks;
 }
 
