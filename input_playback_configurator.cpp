@@ -39,14 +39,6 @@ void *worker_thread(void *cb_threaddata)
 	}
 	try
 	{
-		if (!card->setPhi())
-		{
-			printf("Error with setPhi for phi=%d\n", threaddata->phi);
-			threaddata->error = true;
-			delete card;
-			return NULL;
-		}
-
 		if (!card->setRunMode(UCT2016Layer1CTP7::input_playBack))
 		{
 			printf("Error switching to input playback mode for phi=%d\n", threaddata->phi);
