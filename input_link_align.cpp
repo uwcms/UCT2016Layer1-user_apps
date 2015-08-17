@@ -288,7 +288,7 @@ std::vector<t_align_masks> read_align_mask(void)
 
 		align_masks.push_back(align_masks_ele);
 
-		printf( "Phi: %02d      Eta Pos: 0x%08x        Eta Neg: 0x%08x \n", phi, valPos, valNeg );
+		printf( "Phi: %2d      Eta Pos: 0x%08x        Eta Neg: 0x%08x \n", phi, valPos, valNeg );
 	}
 
 	printf("\n");
