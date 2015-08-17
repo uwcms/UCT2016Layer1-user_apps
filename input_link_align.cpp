@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <stdlib.h>
 #include <pthread.h>
@@ -91,7 +92,7 @@ void *worker_thread(void *cb_threaddata)
 				return NULL;
 			}
 
-			if (!card->alignInputLinks(neg < 0, 3510, 0))
+			if (!card->alignInputLinks(neg < 0, threaddata->alignBX, threaddata->alignSubBX))
 			{
 				printf("Error with alignInputLinks for phi=%d\n", threaddata->phi);
 				threaddata->error = true;
@@ -130,6 +131,29 @@ void *worker_thread(void *cb_threaddata)
 
 int main(int argc, char *argv[])
 {
+	if (argc != 3)
+	{
+		printf("Incorrect program invocation.\n");
+		printf("input_link_align alignBX alignSubBX\n");
+		printf("Exiting...\n");
+		exit(1);
+	}
+
+	std::istringstream ssAlignBX (argv[1]);
+
+	uint32_t alignBX, alignSubBX;
+	if (!(ssAlignBX >> alignBX))
+	{
+		std::cout << "Invalid alignBX number" << argv[1] << '\n';
+		exit(1);
+	}
+	std::istringstream ssAlignSubBX (argv[2]);
+	if (!(ssAlignSubBX >> alignSubBX))
+	{
+		std::cout << "Invalid alignSubBX number" << argv[2] << '\n';
+		exit(1);
+	}
+
 
 	ThreadData threaddata[NUM_PHI];
 	void * ret_info[NUM_PHI];
@@ -137,12 +161,14 @@ int main(int argc, char *argv[])
 	int ret = 0;
 
 	std::vector<t_align_masks> align_masks;
-	
+
 	align_masks = read_align_mask();
 
 	for (int i = 0; i < NUM_PHI; i++)
 	{
 		threaddata[i].phi = i;
+		threaddata[i].alignBX = alignBX;
+		threaddata[i].alignSubBX = alignSubBX;
 		threaddata[i].align_masks = align_masks[i];
 
 		if (pthread_create(&threaddata[i].thread, NULL, worker_thread, &threaddata[i]) != 0)
@@ -206,9 +232,9 @@ std::vector<t_align_masks> read_align_mask(void)
 
 
 		for (int idx = 0; idx < 32; idx++)
-	        {
-		      mask_eta_pos[idx] = (valPos >> idx) & 1;
-		      mask_eta_neg[idx] = (valNeg >> idx) & 1;
+		{
+			mask_eta_pos[idx] = (valPos >> idx) & 1;
+			mask_eta_neg[idx] = (valNeg >> idx) & 1;
 		}
 
 		align_masks_ele.mask_eta_pos = mask_eta_pos;
@@ -221,4 +247,6 @@ std::vector<t_align_masks> read_align_mask(void)
 
 	return align_masks;
 }
+
+
 
