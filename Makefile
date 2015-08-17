@@ -20,7 +20,7 @@ all: $(addprefix $(BIN)/, $(APPS))
 
 $(BIN)/%: %.cpp client-library/libUCT2016Layer1CTP7.so
 	@mkdir -p $(dir $@)
-	g++ $(CCOPTS) -o $@ $< $(LIBS_IPATH) $(LIBS_LPATH) $(LIBS)
+	g++ $(CCOPTS) -o $@ $< client-library/tinyxml2.o $(LIBS_IPATH) $(LIBS_LPATH) $(LIBS)
 
 client-library/libUCT2016Layer1CTP7.so: client-library/Makefile $(filter-out client-library/libUCT2016Layer1CTP7.so, $(wildcard client-library/*.cpp))
 	make -C client-library
