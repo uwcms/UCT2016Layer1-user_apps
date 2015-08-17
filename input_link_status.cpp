@@ -321,7 +321,7 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 			{
 				L1_link_stat.EC_up_cnt++;
 			}
-			if (linkUp != 0 && linkGotAligned == 1)
+			if (linkUp != 0 && linkGotAligned == 1 && alignmentMask == 0)
 			{
 				L1_link_stat.EC_aligned_err_cnt++;
 			}
@@ -329,11 +329,11 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 			{
 				L1_link_stat.EC_align_mask_cnt++;
 			}
-			if (bx0ErrorCount != 0)
+			if (bx0ErrorCount != 0 && alignmentMask == 0)
 			{
 				L1_link_stat.EC_bx0_err_cnt++;
 			}
-			if (checkSumErrorCount != 0)
+			if (checkSumErrorCount != 0 && alignmentMask == 0)
 			{
 				L1_link_stat.EC_checksum_err_cnt++;
 			}
@@ -344,10 +344,10 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 		{
 			L1_link_stat.HC_total_cnt++;
 			if (linkUp != 0) L1_link_stat.HC_up_cnt++;
-			if (linkUp != 0 && linkGotAligned == 1) L1_link_stat.HC_aligned_err_cnt++;
+			if (linkUp != 0 && linkGotAligned == 1 && alignmentMask == 0) L1_link_stat.HC_aligned_err_cnt++;
 			if (alignmentMask != 0) L1_link_stat.HC_align_mask_cnt++;
-			if (bx0ErrorCount != 0) L1_link_stat.HC_bx0_err_cnt++;
-			if (checkSumErrorCount != 0) L1_link_stat.HC_checksum_err_cnt++;
+			if (bx0ErrorCount != 0 && alignmentMask == 0) L1_link_stat.HC_bx0_err_cnt++;
+			if (checkSumErrorCount != 0 && alignmentMask == 0) L1_link_stat.HC_checksum_err_cnt++;
 		}
 
 		// HF Layer-1 Link Summary Statistics
@@ -355,10 +355,10 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 		{
 			L1_link_stat.HF_total_cnt++;
 			if (linkUp != 0) L1_link_stat.HF_up_cnt++;
-			if (linkUp != 0 && linkGotAligned == 1) L1_link_stat.HF_aligned_err_cnt++;
+			if (linkUp != 0 && linkGotAligned == 1 && alignmentMask == 0) L1_link_stat.HF_aligned_err_cnt++;
 			if (alignmentMask != 0) L1_link_stat.HF_align_mask_cnt++;
-			if (bx0ErrorCount != 0) L1_link_stat.HF_bx0_err_cnt++;
-			if (checkSumErrorCount != 0) L1_link_stat.HF_checksum_err_cnt++;
+			if (bx0ErrorCount != 0 && alignmentMask == 0) L1_link_stat.HF_bx0_err_cnt++;
+			if (checkSumErrorCount != 0 && alignmentMask == 0) L1_link_stat.HF_checksum_err_cnt++;
 		}
 
 
