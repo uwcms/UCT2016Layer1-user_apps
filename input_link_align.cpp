@@ -25,6 +25,15 @@ typedef struct align_masks
 	std::vector<uint32_t> mask_eta_neg;
 } t_align_masks;
 
+typedef struct align_status
+{
+	uint32_t eta_pos;
+	uint32_t eta_neg;
+
+} t_align_status;
+
+
+
 class ThreadData
 {
 public:
@@ -60,6 +69,9 @@ void *worker_thread(void *cb_threaddata)
 		threaddata->error = true;
 		return NULL;
 	}
+
+	t_align_status * align_status = (t_align_status *) malloc(sizeof(t_align_status));
+
 
 	try
 	{
@@ -115,6 +127,25 @@ void *worker_thread(void *cb_threaddata)
 				delete card;
 				return NULL;
 			}
+
+			usleep(100);
+
+		}
+
+		if (!card->getInputLinkAlignmentStatus(true, align_status->eta_pos))
+		{
+			printf("Error with getInputLinkAlignmentStatus for phi=%d\n", threaddata->phi);
+			threaddata->error = true;
+			delete card;
+			return NULL;
+		}
+
+		if (!card->getInputLinkAlignmentStatus(false, align_status->eta_neg))
+		{
+			printf("Error with getInputLinkAlignmentStatus for phi=%d\n", threaddata->phi);
+			threaddata->error = true;
+			delete card;
+			return NULL;
 		}
 	}
 	catch (std::exception &e)
@@ -126,7 +157,7 @@ void *worker_thread(void *cb_threaddata)
 	}
 
 	delete card;
-	pthread_exit(NULL );
+	pthread_exit((void *) align_status);
 }
 
 int main(int argc, char *argv[])
@@ -190,9 +221,22 @@ int main(int argc, char *argv[])
 			printf("input_link_align from phi %d returned error.\n", i);
 			ret = 1;
 		}
-
-		free(ret_info[i]);
 	}
+
+	printf("Input Link Alignment Result: \n");
+	for (int i = 0; i < NUM_PHI; i++)
+	{
+
+		t_align_status * p_align_status;
+		p_align_status = (t_align_status * ) ret_info[i];
+
+		printf("Phi: %2d      Eta Pos:    %s        Eta Neg:    %s\n", 
+				i, p_align_status->eta_pos?"FAILURE":"SUCCESS",  p_align_status->eta_neg?"FAILURE":"SUCCESS");
+		free(p_align_status);
+
+	}
+
+	printf("\n");
 
 	return ret;
 }
@@ -207,6 +251,8 @@ std::vector<t_align_masks> read_align_mask(void)
 
 	std::vector<t_align_masks> align_masks;
 	t_align_masks align_masks_ele;
+
+	printf("\nInput Link Alignment Masks: \n");
 
 	for ( child = doc.FirstChildElement( "layer1_align_mask_config" )->FirstChildElement("phi_config"); child; child = child->NextSiblingElement("phi_config") )
 	{
@@ -242,8 +288,10 @@ std::vector<t_align_masks> read_align_mask(void)
 
 		align_masks.push_back(align_masks_ele);
 
-		printf( " Phi: %02d   Alignment Mask Eta Pos: 0x%08x  Alignment Mask Eta Neg: 0x%08x \n", phi, valPos, valNeg );
+		printf( "Phi: %02d      Eta Pos: 0x%08x        Eta Neg: 0x%08x \n", phi, valPos, valNeg );
 	}
+
+	printf("\n");
 
 	return align_masks;
 }
