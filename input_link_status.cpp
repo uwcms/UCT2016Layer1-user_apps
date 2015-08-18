@@ -379,7 +379,7 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 
 		if (linkUp != 0 && linkGotAligned == 1)
 		{
-			link_got_aligned_str = "    ALIGNED";
+			link_got_aligned_str = "      ALIGNED";
 		}
 		else
 		{
@@ -388,7 +388,7 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 
 		if (linkUp != 0 && linkLocked == 1)
 		{
-			link_locked_str = "     LOCKED";
+			link_locked_str = "      LOCKED";
 		}
 		else
 		{

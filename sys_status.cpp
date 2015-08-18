@@ -133,20 +133,20 @@ int main(int argc, char *argv[])
 			ret = 1;
 		}
 
-          	t_sys_system_info * p_sys_system_info;	
+		t_sys_system_info * p_sys_system_info;
 		p_sys_system_info = (t_sys_system_info * ) ret_info[i];
 
 		uint32_t phi = p_sys_system_info->phi;
 
-			typedef struct FWInfo
-	{
-		uint32_t buildTimestamp;
-		uint32_t gitHashCode;
-		uint32_t gitHashDirty;
-		uint32_t version;
-		uint32_t projectCode;
-		uint32_t uptime;
-	} FWInfo;
+		typedef struct FWInfo
+		{
+			uint32_t buildTimestamp;
+			uint32_t gitHashCode;
+			uint32_t gitHashDirty;
+			uint32_t version;
+			uint32_t projectCode;
+			uint32_t uptime;
+		} FWInfo;
 
 
 		uint32_t buildTimestamp  = p_sys_system_info->fwInfo.buildTimestamp;
@@ -172,9 +172,9 @@ int main(int argc, char *argv[])
 		uint32_t Start      = p_sys_system_info->ttc_bgo_cmd_cnt.Start;
 		uint32_t Stop       = p_sys_system_info->ttc_bgo_cmd_cnt.Stop;
 
-		printf("| %3d   |    %10d |    %10d |    %10d |    %10d |    %10d |    %10d |    %10d |    %10d |    %10d |    %10d |\n", 
-				phi, BCClockLocked, BX0Locked, BX0Error, BX0UnlockedCnt, TTCDecoderSingleError,  TTCDecoderDoubleError, 
-				L1A, BX0, buildTimestamp , uptime );
+		printf("| %3d   |    %10d |    %10d |    %10d |    %10d |    %10d |    %10d |    %10d |    %10d |    %10d |    %10d |\n",
+		       phi, BCClockLocked, BX0Locked, BX0Error, BX0UnlockedCnt, TTCDecoderSingleError,  TTCDecoderDoubleError,
+		       L1A, BX0, buildTimestamp , uptime );
 
 		//free
 	}
@@ -182,4 +182,5 @@ int main(int argc, char *argv[])
 
 	return ret;
 }
+
 

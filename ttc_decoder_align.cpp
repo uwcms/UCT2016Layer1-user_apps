@@ -13,8 +13,6 @@
 
 #define NUM_PHI 18
 
-std::string pattern_path;
-
 class ThreadData
 {
 public:
@@ -94,4 +92,5 @@ int main(int argc, char *argv[])
 
 	return ret;
 }
+
 

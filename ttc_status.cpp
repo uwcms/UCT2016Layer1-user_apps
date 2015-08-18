@@ -13,8 +13,6 @@
 
 #define NUM_PHI 18
 
-std::string pattern_path;
-
 class ThreadData
 {
 public:
@@ -36,7 +34,7 @@ typedef struct ttc_system_info
 } t_ttc_system_info;
 
 
-void *download_thread(void *cb_threaddata)
+void *worker_thread(void *cb_threaddata)
 {
 	ThreadData *threaddata = static_cast<ThreadData*>(cb_threaddata);
 
@@ -112,15 +110,13 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < NUM_PHI; i++)
 	{
 		threaddata[i].phi = i;
-		if (pthread_create(&threaddata[i].thread, NULL, download_thread, &threaddata[i]) != 0)
+		if (pthread_create(&threaddata[i].thread, NULL, worker_thread, &threaddata[i]) != 0)
 		{
 			printf("Couldnt launch thread for phi %d\n", i);
 			return 1;
 		}
 	}
 	
-
-
 	for (int i = 0; i < NUM_PHI; i++)
 	{
 		if (pthread_join(threaddata[i].thread, (void **) (&ret_info[i])) != 0)
@@ -143,6 +139,4 @@ int main(int argc, char *argv[])
 
 	return ret;
 }
-
-
 
