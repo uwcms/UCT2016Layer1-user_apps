@@ -59,6 +59,7 @@ typedef struct link_summary_status
 	uint32_t EC_total_cnt;
 	uint32_t EC_up_cnt;
 	uint32_t EC_aligned_err_cnt;
+	uint32_t EC_locked_err_cnt;
 	uint32_t EC_align_mask_cnt;
 	uint32_t EC_bx0_err_cnt;
 	uint32_t EC_checksum_err_cnt;
@@ -67,6 +68,7 @@ typedef struct link_summary_status
 	uint32_t HC_total_cnt;
 	uint32_t HC_up_cnt;
 	uint32_t HC_aligned_err_cnt;
+	uint32_t HC_locked_err_cnt;
 	uint32_t HC_align_mask_cnt;
 	uint32_t HC_bx0_err_cnt;
 	uint32_t HC_checksum_err_cnt;
@@ -75,6 +77,7 @@ typedef struct link_summary_status
 	uint32_t HF_total_cnt;
 	uint32_t HF_up_cnt;
 	uint32_t HF_aligned_err_cnt;
+	uint32_t HF_locked_err_cnt;
 	uint32_t HF_align_mask_cnt;
 	uint32_t HF_bx0_err_cnt;
 	uint32_t HF_checksum_err_cnt;
@@ -232,37 +235,40 @@ void print_link_summary_status(t_L1_link_stat L1_link_stat)
 {
 	printf("\n\n");
 
-	printf("|===========================================================================================|\n");
-	printf("| Layer-1 Input Link Status Summary                                                         |\n");
-	printf("|-------------------------------------------------------------------------------------------|\n");
-	printf("|       Calo | Link Count |         Up |    Aligned | Align Mask |  BX0 Error | Chksm Error | \n");
-	printf("|===========================================================================================|\n");
+	printf("|=========================================================================================================|\n");
+	printf("| Layer-1 Input Link Status Summary                                                                       |\n");
+	printf("|---------------------------------------------------------------------------------------------------------|\n");
+	printf("|       Calo | Link Count |         Up | Got Aligned |     Locked | Align Mask |  BX0 Error | Chksm Error | \n");
+	printf("|=========================================================================================================|\n");
 
-	printf("|       ECAL | %10d | %10d | %10d | %10d | %10d | %10d  | \n",
+	printf("|       ECAL | %10d | %10d |  %10d | %10d | %10d | %10d | %10d  | \n",
 	       L1_link_stat.EC_total_cnt, 
 	       L1_link_stat.EC_up_cnt, 
 	       L1_link_stat.EC_aligned_err_cnt, 
+	       L1_link_stat.EC_locked_err_cnt, 
 	       L1_link_stat.EC_align_mask_cnt,  
 	       L1_link_stat.EC_bx0_err_cnt,
 	       L1_link_stat.EC_checksum_err_cnt);
 
-	printf("|       HCAL | %10d | %10d | %10d | %10d | %10d | %10d  | \n",
+	printf("|       HCAL | %10d | %10d |  %10d | %10d | %10d | %10d | %10d  | \n",
 	       L1_link_stat.HC_total_cnt, 
 	       L1_link_stat.HC_up_cnt, 
 	       L1_link_stat.HC_aligned_err_cnt, 
+	       L1_link_stat.HC_locked_err_cnt, 
 	       L1_link_stat.HC_align_mask_cnt,  
 	       L1_link_stat.HC_bx0_err_cnt, 
 	       L1_link_stat.HC_checksum_err_cnt);
 
-	printf("|         HF | %10d | %10d | %10d | %10d | %10d | %10d  | \n",
+	printf("|         HF | %10d | %10d |  %10d | %10d | %10d | %10d | %10d  | \n",
 	       L1_link_stat.HF_total_cnt,
 	       L1_link_stat.HF_up_cnt, 
 	       L1_link_stat.HF_aligned_err_cnt, 
+	       L1_link_stat.HF_locked_err_cnt, 
 	       L1_link_stat.HF_align_mask_cnt,  
 	       L1_link_stat.HF_bx0_err_cnt, 
 	       L1_link_stat.HF_checksum_err_cnt);
 
-	printf("|===========================================================================================|\n");
+	printf("|=========================================================================================================|\n");
 
 	return;
 }
@@ -297,9 +303,9 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 		eta_side_str = "-";
 	}
 
-	printf("|------------------------------------------------------------------------------------------------------------------------------|\n");
-	printf("| Phi | Side |  Cal |  iEta | Status |   Got Aligned | BX0 Latency | BX0 Err | CRC Err | Align Mask | TT Mask |  Raw Link Stat |\n");
-	printf("|------------------------------------------------------------------------------------------------------------------------------|\n");
+	printf("|---------------------------------------------------------------------------------------------------------------------------------------------|\n");
+	printf("| Phi | Side | Calo |  iEta | Status |   Got Aligned |       Locked | BX0 Latency | BX0 Err | CRC Err | Align Mask | TT Mask |  Raw Link Stat |\n");
+	printf("|---------------------------------------------------------------------------------------------------------------------------------------------|\n");
 
 	for (int i = 0; i < 32; i++)
 	{
@@ -373,11 +379,20 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 
 		if (linkUp != 0 && linkGotAligned == 1)
 		{
-			link_got_aligned_str = "      ALIGNED";
+			link_got_aligned_str = "    ALIGNED";
 		}
 		else
 		{
-			link_got_aligned_str = "  MIS-ALIGNED";
+			link_got_aligned_str = "*MIS-ALIGNED*";
+		}
+
+		if (linkUp != 0 && linkLocked == 1)
+		{
+			link_locked_str = "     LOCKED";
+		}
+		else
+		{
+			link_locked_str = "  *UNLOCKED*";
 		}
 
 		if (alignmentMask != 0 )
@@ -389,8 +404,8 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 			align_mask_str = " DISABLED";
 		}
 
-		printf("|  %2d |    %s | %s | %s | %s |    %8.2f |  %6d |  %6d |  %s |   0x%03X |     0x%08x |\n",
-		       phi, eta_side_str.c_str(), Cal_iEta[i],  link_up_str.c_str(), link_got_aligned_str.c_str(),
+		printf("|  %2d |    %s | %s | %s | %s | %s |    %8.2f |  %6d |  %6d |  %s |   0x%03X |     0x%08x |\n",
+		       phi, eta_side_str.c_str(), Cal_iEta[i],  link_up_str.c_str(), link_got_aligned_str.c_str(), link_locked_str.c_str(),
 		       (float)bx0Latency / 6, bx0ErrorCount, checkSumErrorCount, align_mask_str.c_str(), towerMask, rawLinkStatus);
 	}
 
@@ -408,9 +423,10 @@ void print_header(void)
 	timeinfo = localtime(&rawtime);
 	strftime(curr_time_str, 80, "%d-%m-%Y %I:%M:%S", timeinfo);
 
-	printf("|==============================================================================================================================|\n");
-	printf("| Layer-1 Input Link Status (%s)                                                                              |\n", curr_time_str);
-	printf("|==============================================================================================================================|\n");
+	printf("|=============================================================================================================================================|\n");
+	printf("| Layer-1 Input Link Status (%s)                                                                                             |\n", curr_time_str);
+	printf("|=============================================================================================================================================|\n");
+
 
 	return;
 }
