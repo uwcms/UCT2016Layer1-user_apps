@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
 		print_link_detailed_status(phi, true, slice_link_status, L1_link_stat);
 
 		// We are done with return info from worker_thread[i]. Release memory allocated in the thread
-          	free(p_link_status);
+		free(p_link_status);
 	}
 
 	print_link_summary_status(L1_link_stat);
@@ -242,30 +242,30 @@ void print_link_summary_status(t_L1_link_stat L1_link_stat)
 	printf("|=========================================================================================================|\n");
 
 	printf("|       ECAL | %10d | %10d |  %10d | %10d | %10d | %10d | %10d  | \n",
-	       L1_link_stat.EC_total_cnt, 
-	       L1_link_stat.EC_up_cnt, 
-	       L1_link_stat.EC_aligned_err_cnt, 
-	       L1_link_stat.EC_locked_err_cnt, 
-	       L1_link_stat.EC_align_mask_cnt,  
+	       L1_link_stat.EC_total_cnt,
+	       L1_link_stat.EC_up_cnt,
+	       L1_link_stat.EC_aligned_err_cnt,
+	       L1_link_stat.EC_locked_err_cnt,
+	       L1_link_stat.EC_align_mask_cnt,
 	       L1_link_stat.EC_bx0_err_cnt,
 	       L1_link_stat.EC_checksum_err_cnt);
 
 	printf("|       HCAL | %10d | %10d |  %10d | %10d | %10d | %10d | %10d  | \n",
-	       L1_link_stat.HC_total_cnt, 
-	       L1_link_stat.HC_up_cnt, 
-	       L1_link_stat.HC_aligned_err_cnt, 
-	       L1_link_stat.HC_locked_err_cnt, 
-	       L1_link_stat.HC_align_mask_cnt,  
-	       L1_link_stat.HC_bx0_err_cnt, 
+	       L1_link_stat.HC_total_cnt,
+	       L1_link_stat.HC_up_cnt,
+	       L1_link_stat.HC_aligned_err_cnt,
+	       L1_link_stat.HC_locked_err_cnt,
+	       L1_link_stat.HC_align_mask_cnt,
+	       L1_link_stat.HC_bx0_err_cnt,
 	       L1_link_stat.HC_checksum_err_cnt);
 
 	printf("|         HF | %10d | %10d |  %10d | %10d | %10d | %10d | %10d  | \n",
 	       L1_link_stat.HF_total_cnt,
-	       L1_link_stat.HF_up_cnt, 
-	       L1_link_stat.HF_aligned_err_cnt, 
-	       L1_link_stat.HF_locked_err_cnt, 
-	       L1_link_stat.HF_align_mask_cnt,  
-	       L1_link_stat.HF_bx0_err_cnt, 
+	       L1_link_stat.HF_up_cnt,
+	       L1_link_stat.HF_aligned_err_cnt,
+	       L1_link_stat.HF_locked_err_cnt,
+	       L1_link_stat.HF_align_mask_cnt,
+	       L1_link_stat.HF_bx0_err_cnt,
 	       L1_link_stat.HF_checksum_err_cnt);
 
 	printf("|=========================================================================================================|\n");
@@ -303,9 +303,9 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 		eta_side_str = "-";
 	}
 
-	printf("|---------------------------------------------------------------------------------------------------------------------------------------------|\n");
-	printf("| Phi | Side | Calo |  iEta | Status |   Got Aligned |       Locked | BX0 Latency | BX0 Err | CRC Err | Align Mask | TT Mask |  Raw Link Stat |\n");
-	printf("|---------------------------------------------------------------------------------------------------------------------------------------------|\n");
+	printf("|-----------------------------------------------------------------------------------------------------------------------------------------------------|\n");
+	printf("| Phi | Side | Calo |  iEta | Status |   Got Aligned |       Locked | BX0 Latency |   BX0 Error |  Chksum Err | Align Mask | TT Mask |  Raw Link Stat |\n");
+	printf("|-----------------------------------------------------------------------------------------------------------------------------------------------------|\n");
 
 	for (int i = 0; i < 32; i++)
 	{
@@ -323,22 +323,32 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 		if (i < 16 )
 		{
 			L1_link_stat.EC_total_cnt++;
+
 			if (linkUp != 0)
 			{
 				L1_link_stat.EC_up_cnt++;
 			}
+
 			if (linkUp != 0 && linkGotAligned == 1 && alignmentMask == 0)
 			{
 				L1_link_stat.EC_aligned_err_cnt++;
 			}
+
 			if (alignmentMask != 0)
 			{
 				L1_link_stat.EC_align_mask_cnt++;
 			}
+
+			if (linkLocked != 0)
+			{
+				L1_link_stat.EC_locked_err_cnt++;
+			}
+
 			if (bx0ErrorCount != 0 && alignmentMask == 0)
 			{
 				L1_link_stat.EC_bx0_err_cnt++;
 			}
+
 			if (checkSumErrorCount != 0 && alignmentMask == 0)
 			{
 				L1_link_stat.EC_checksum_err_cnt++;
@@ -349,24 +359,71 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 		if (i > 15 && i < 30 )
 		{
 			L1_link_stat.HC_total_cnt++;
-			if (linkUp != 0) L1_link_stat.HC_up_cnt++;
-			if (linkUp != 0 && linkGotAligned == 1 && alignmentMask == 0) L1_link_stat.HC_aligned_err_cnt++;
-			if (alignmentMask != 0) L1_link_stat.HC_align_mask_cnt++;
-			if (bx0ErrorCount != 0 && alignmentMask == 0) L1_link_stat.HC_bx0_err_cnt++;
-			if (checkSumErrorCount != 0 && alignmentMask == 0) L1_link_stat.HC_checksum_err_cnt++;
-		}
 
+			if (linkUp != 0)
+			{
+				L1_link_stat.HC_up_cnt++;
+			}
+
+			if (linkUp != 0 && linkGotAligned == 1 && alignmentMask == 0)
+			{
+				L1_link_stat.HC_aligned_err_cnt++;
+			}
+
+			if (alignmentMask != 0)
+			{
+				L1_link_stat.HC_align_mask_cnt++;
+			}
+
+			if (linkLocked != 0)
+			{
+				L1_link_stat.HC_locked_err_cnt++;
+			}
+
+			if (bx0ErrorCount != 0 && alignmentMask == 0)
+			{
+				L1_link_stat.HC_bx0_err_cnt++;
+			}
+
+			if (checkSumErrorCount != 0 && alignmentMask == 0)
+			{
+				L1_link_stat.HC_checksum_err_cnt++;
+			}
+		}
 		// HF Layer-1 Link Summary Statistics
 		if (i > 29 && i < 32 )
 		{
 			L1_link_stat.HF_total_cnt++;
-			if (linkUp != 0) L1_link_stat.HF_up_cnt++;
-			if (linkUp != 0 && linkGotAligned == 1 && alignmentMask == 0) L1_link_stat.HF_aligned_err_cnt++;
-			if (alignmentMask != 0) L1_link_stat.HF_align_mask_cnt++;
-			if (bx0ErrorCount != 0 && alignmentMask == 0) L1_link_stat.HF_bx0_err_cnt++;
-			if (checkSumErrorCount != 0 && alignmentMask == 0) L1_link_stat.HF_checksum_err_cnt++;
-		}
 
+			if (linkUp != 0)
+			{
+				L1_link_stat.HF_up_cnt++;
+			}
+
+			if (linkUp != 0 && linkGotAligned == 1 && alignmentMask == 0)
+			{
+				L1_link_stat.HF_aligned_err_cnt++;
+			}
+
+			if (alignmentMask != 0)
+			{
+				L1_link_stat.HF_align_mask_cnt++;
+			}
+
+			if (linkLocked != 0)
+			{
+				L1_link_stat.HF_locked_err_cnt++;
+			}
+
+			if (bx0ErrorCount != 0 && alignmentMask == 0)
+			{
+				L1_link_stat.HF_bx0_err_cnt++;
+			}
+			if (checkSumErrorCount != 0 && alignmentMask == 0)
+			{
+				L1_link_stat.HF_checksum_err_cnt++;
+			}
+		}
 
 		if (linkUp == 0)
 		{
@@ -397,14 +454,14 @@ void  print_link_detailed_status(int phi, bool negativeEta, std::vector<UCT2016L
 
 		if (alignmentMask != 0 )
 		{
-			align_mask_str = "   MASKED";
+			align_mask_str = " *MASKED*";
 		}
 		else
 		{
-			align_mask_str = " DISABLED";
+			align_mask_str = "UN-MASKED";
 		}
 
-		printf("|  %2d |    %s | %s | %s | %s | %s |    %8.2f |  %6d |  %6d |  %s |   0x%03X |     0x%08x |\n",
+		printf("|  %2d |    %s | %s | %s | %s | %s |    %8.2f |  %10u |  %10u |  %s |   0x%03X |     0x%08x |\n",
 		       phi, eta_side_str.c_str(), Cal_iEta[i],  link_up_str.c_str(), link_got_aligned_str.c_str(), link_locked_str.c_str(),
 		       (float)bx0Latency / 6, bx0ErrorCount, checkSumErrorCount, align_mask_str.c_str(), towerMask, rawLinkStatus);
 	}
@@ -423,9 +480,9 @@ void print_header(void)
 	timeinfo = localtime(&rawtime);
 	strftime(curr_time_str, 80, "%d-%m-%Y %I:%M:%S", timeinfo);
 
-	printf("|=============================================================================================================================================|\n");
-	printf("| Layer-1 Input Link Status (%s)                                                                                             |\n", curr_time_str);
-	printf("|=============================================================================================================================================|\n");
+	printf("|=====================================================================================================================================================|\n");
+	printf("| Layer-1 Input Link Status (%s)                                                                                                     |\n", curr_time_str);
+	printf("|=====================================================================================================================================================|\n");
 
 
 	return;

@@ -132,7 +132,7 @@ void *worker_thread(void *cb_threaddata)
 
 		}
 
-		if (!card->getInputLinkAlignmentStatus(true, align_status->eta_pos))
+		if (!card->getInputLinkAlignmentStatus(false, align_status->eta_pos))
 		{
 			printf("Error with getInputLinkAlignmentStatus for phi=%d\n", threaddata->phi);
 			threaddata->error = true;
@@ -140,7 +140,7 @@ void *worker_thread(void *cb_threaddata)
 			return NULL;
 		}
 
-		if (!card->getInputLinkAlignmentStatus(false, align_status->eta_neg))
+		if (!card->getInputLinkAlignmentStatus(true, align_status->eta_neg))
 		{
 			printf("Error with getInputLinkAlignmentStatus for phi=%d\n", threaddata->phi);
 			threaddata->error = true;
