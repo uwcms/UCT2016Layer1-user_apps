@@ -62,7 +62,6 @@ std::map<int, lut_data_t> load_file(std::string path)
 	getline(infile, dummyLine);
 	getline(infile, dummyLine);
 	getline(infile, dummyLine);
-	getline(infile, dummyLine);
 
 	for (int idx = 0; idx < 512; idx++)
 	{
