@@ -102,7 +102,7 @@ void *upload_thread(void *cb_threaddata)
 	UCT2016Layer1CTP7 *card = NULL;
 	try
 	{
-		card = new UCT2016Layer1CTP7(threaddata->phi);
+                 card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
 	}
 	catch (std::runtime_error &e)
 	{
