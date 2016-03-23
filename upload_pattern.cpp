@@ -59,17 +59,17 @@ void *upload_thread(void *cb_threaddata)
 			{
 				linkdata_t &data = linkdata[neg * ieta];
 
-				snprintf(namepart, 64, "calo_slice_phi_%02u_%c_ieta_%02u_ECAL", threaddata->phi, (neg < 0 ? 'N' : 'P'), ieta);
+				snprintf(namepart, 64, "calo_slice_phi_%02u_%c_ieta_%02u_ECAL", threaddata->phi, (neg < 0 ? 'M' : 'P'), ieta);
 				data.ecal = load_file(pattern_path + "/" + namepart);
 
-				snprintf(namepart, 64, "calo_slice_phi_%02u_%c_ieta_%02u_HCAL", threaddata->phi, (neg < 0 ? 'N' : 'P'), ieta);
+				snprintf(namepart, 64, "calo_slice_phi_%02u_%c_ieta_%02u_HCAL", threaddata->phi, (neg < 0 ? 'M' : 'P'), ieta);
 				data.hcal = load_file(pattern_path + "/" + namepart);
 			}
 
-			snprintf(namepart, 64, "calo_slice_phi_%02u_%c_ieta_30_HF_A", threaddata->phi, (neg < 0 ? 'N' : 'P'));
+			snprintf(namepart, 64, "calo_slice_phi_%02u_%c_ieta_30_HF_A", threaddata->phi, (neg < 0 ? 'M' : 'P'));
 			linkdata[neg * 30].ecal /* hf_a */ = load_file(pattern_path + "/" + namepart);
 
-			snprintf(namepart, 64, "calo_slice_phi_%02u_%c_ieta_30_HF_B", threaddata->phi, (neg < 0 ? 'N' : 'P'));
+			snprintf(namepart, 64, "calo_slice_phi_%02u_%c_ieta_30_HF_B", threaddata->phi, (neg < 0 ? 'M' : 'P'));
 			linkdata[neg * 30].hcal /* hf_b */ = load_file(pattern_path + "/" + namepart);
 		}
 	}
@@ -83,7 +83,8 @@ void *upload_thread(void *cb_threaddata)
 	UCT2016Layer1CTP7 *card = NULL;
 	try
 	{
-		card = new UCT2016Layer1CTP7(threaddata->phi);
+                 card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
+
 	}
 	catch (std::runtime_error &e)
 	{

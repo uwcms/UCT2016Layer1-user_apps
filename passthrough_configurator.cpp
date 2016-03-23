@@ -37,38 +37,27 @@ void *worker_thread(void *cb_threaddata)
 		threaddata->error = true;
 		return NULL;
 	}
-
 	try
 	{
-
-		if (!card->configRefClk())
+		if (!card->setRunMode(UCT2016Layer1CTP7::normal))
 		{
-			printf("Error with configRefClk for phi=%d\n", threaddata->phi);
+			printf("Error switching to normal mode for phi=%d\n", threaddata->phi);
 			threaddata->error = true;
 			delete card;
 			return NULL;
 		}
 
-		if (!card->setTxPower(true))
+		if (!card->alignOutputLinks(false))
 		{
-			printf("Error with setTxPower for phi=%d\n", threaddata->phi);
+			printf("Error with output link alignment for phi=%d\n", threaddata->phi);
 			threaddata->error = true;
 			delete card;
 			return NULL;
 		}
 
-
-		if (!card->hardReset("ctp7_v7_stage2"))
+		if (!card->alignOutputLinks(true))
 		{
-			printf("Error with hardReset for phi=%d\n", threaddata->phi);
-			threaddata->error = true;
-			delete card;
-			return NULL;
-		}
-
-		if (!card->alignTTCDecoder())
-		{
-			printf("Error with alignTTCDecoder for phi=%d\n", threaddata->phi);
+			printf("Error with output link alignment for phi=%d\n", threaddata->phi);
 			threaddata->error = true;
 			delete card;
 			return NULL;
@@ -77,7 +66,7 @@ void *worker_thread(void *cb_threaddata)
 	}
 	catch (std::exception &e)
 	{
-		printf("Error with input_playback_configuration from phi %d: %s\n", threaddata->phi, e.what());
+		printf("Error with Pass-through Configurator from phi %d: %s\n", threaddata->phi, e.what());
 		threaddata->error = true;
 		delete card;
 		return NULL;
@@ -112,12 +101,11 @@ int main(int argc, char *argv[])
 		}
 		else if (threaddata[i].error)
 		{
-			printf("hard reset from phi %d returned error.\n", i);
+			printf("Pass-through Configuration from phi %d returned error.\n", i);
 			ret = 1;
 		}
 	}
 
 	return ret;
 }
-
 

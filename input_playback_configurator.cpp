@@ -29,7 +29,7 @@ void *worker_thread(void *cb_threaddata)
 	UCT2016Layer1CTP7 *card = NULL;
 	try
 	{
-		card = new UCT2016Layer1CTP7(threaddata->phi);
+                 card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
 	}
 	catch (std::runtime_error &e)
 	{
@@ -46,23 +46,6 @@ void *worker_thread(void *cb_threaddata)
 			delete card;
 			return NULL;
 		}
-
-		if (!card->alignOutputLinks(false))
-		{
-			printf("Error with output link alignment for phi=%d\n", threaddata->phi);
-			threaddata->error = true;
-			delete card;
-			return NULL;
-		}
-
-		if (!card->alignOutputLinks(true))
-		{
-			printf("Error with output link alignment for phi=%d\n", threaddata->phi);
-			threaddata->error = true;
-			delete card;
-			return NULL;
-		}
-
 	}
 	catch (std::exception &e)
 	{
@@ -108,5 +91,4 @@ int main(int argc, char *argv[])
 
 	return ret;
 }
-
 

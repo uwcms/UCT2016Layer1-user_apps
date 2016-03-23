@@ -1,27 +1,28 @@
-CCOPTS = -ggdb -Wall
-
+CCOPTS = -ggdb -Wall -DNUM_PHI_CARDS=18
 BIN=bin
 
 APPS =	upload_pattern \
-	upload_lut \
 	download_pattern \
+	upload_lut \
 	download_lut \
 	translate_lut \
+	request_io_capture \
 	ttc_decoder_align \
-	ttc_status sys_status \
-	input_link_align \
-	input_link_align_manual \
+	ttc_status \
+	daq_status \
+        sys_status \
+	io_link_align \
 	run_config \
 	reset_link_errors \
         check_alignment	\
-        request_syncd_capture \
 	input_link_status \
 	hard_reset \
-	link_masking \
+	tmt_cycle_config \
 	input_capture \
 	output_capture \
 	download_output_capture \
 	download_input_capture \
+	download_tower_mask \
 	request_pattern_capture \
 	passthrough_configurator \
 	input_playback_configurator

@@ -16,7 +16,6 @@
 
 using namespace tinyxml2;
 
-
 #define NUM_PHI 18
 
 typedef struct align_masks
@@ -33,7 +32,6 @@ typedef struct align_status
 } t_align_status;
 
 
-
 class ThreadData
 {
 public:
@@ -46,17 +44,19 @@ public:
 
 	t_align_masks align_masks;
 
+	uint32_t run_number;
+
+	UCT2016Layer1CTP7::DAQConfig daqConfig;
+
 	ThreadData() : phi(0), error(false) { };
 };
 
 std::vector<t_align_masks> read_align_mask(void);
 
 
-
 void *worker_thread(void *cb_threaddata)
 {
 	ThreadData *threaddata = static_cast<ThreadData*>(cb_threaddata);
-
 
 	UCT2016Layer1CTP7 *card = NULL;
 	try
@@ -70,22 +70,42 @@ void *worker_thread(void *cb_threaddata)
 		return NULL;
 	}
 
-	t_align_status * align_status = (t_align_status *) malloc(sizeof(t_align_status));
-
-
 	try
 	{
+		if (!card->alignTTCDecoder())
+		{
+			printf("Error with alignTTCDecoder for phi=%d\n", threaddata->phi);
+			threaddata->error = true;
+			delete card;
+			return NULL;
+		}
+
+		if (!card->setRunNumber(threaddata->run_number))
+		{
+			printf("Error with setRunNumber for phi=%d\n", threaddata->phi);
+			threaddata->error = true;
+			delete card;
+			return NULL;
+		}
+
+		if (!card->setDAQConfig(threaddata->daqConfig))
+		{
+			printf("Error with setDAQConfig for phi=%d\n", threaddata->phi);
+			threaddata->error = true;
+			delete card;
+			return NULL;
+		}
+
+		if (!card->setRunMode(UCT2016Layer1CTP7::normal))
+		{
+			printf("Error switching to normal mode for phi=%d\n", threaddata->phi);
+			threaddata->error = true;
+			delete card;
+			return NULL;
+		}
+
 		for (int neg = -1; neg <= 1; neg += 2)
 		{
-
-			if (!card->resetInputLinkDecoders(neg < 0))
-			{
-				printf("Error with resetInputLinkDecoders for phi=%d\n", threaddata->phi);
-				threaddata->error = true;
-				delete card;
-				return NULL;
-			}
-
 			std::vector<uint32_t> mask;
 
 			if (neg < 0)
@@ -103,54 +123,11 @@ void *worker_thread(void *cb_threaddata)
 				delete card;
 				return NULL;
 			}
-
-			if (!card->alignInputLinks(neg < 0, threaddata->alignBX, threaddata->alignSubBX))
-			{
-				printf("Error with alignInputLinks for phi=%d\n", threaddata->phi);
-				threaddata->error = true;
-				delete card;
-				return NULL;
-			}
-
-			if (!card->resetInputLinkChecksumErrorCounters(neg < 0))
-			{
-				printf("Error with resetInputLinkChecksumErrorCounters for phi=%d\n", threaddata->phi);
-				threaddata->error = true;
-				delete card;
-				return NULL;
-			}
-
-			if (!card->resetInputLinkBX0ErrorCounters(neg < 0))
-			{
-				printf("Error with resetInputLinkBX0ErrorCounters for phi=%d\n", threaddata->phi);
-				threaddata->error = true;
-				delete card;
-				return NULL;
-			}
-
-			usleep(100);
-
-		}
-
-		if (!card->getInputLinkAlignmentStatus(false, align_status->eta_pos))
-		{
-			printf("Error with getInputLinkAlignmentStatus for phi=%d\n", threaddata->phi);
-			threaddata->error = true;
-			delete card;
-			return NULL;
-		}
-
-		if (!card->getInputLinkAlignmentStatus(true, align_status->eta_neg))
-		{
-			printf("Error with getInputLinkAlignmentStatus for phi=%d\n", threaddata->phi);
-			threaddata->error = true;
-			delete card;
-			return NULL;
 		}
 	}
 	catch (std::exception &e)
 	{
-		printf("Error with input_link_align from phi %d: %s\n", threaddata->phi, e.what());
+		printf("Error with run_config from phi %d: %s\n", threaddata->phi, e.what());
 		threaddata->error = true;
 		delete card;
 		return NULL;
@@ -162,22 +139,24 @@ void *worker_thread(void *cb_threaddata)
 
 int main(int argc, char *argv[])
 {
-	if (argc != 3)
+	if (argc != 5)
 	{
 		printf("Incorrect program invocation.\n");
-		printf("input_link_align alignBX alignSubBX\n");
+		printf("run_config alignBX alignSubBX daqPipelineDepth runNumber\n");
 		printf("Exiting...\n");
 		exit(1);
 	}
 
-	std::istringstream ssAlignBX (argv[1]);
+	uint32_t alignBX, alignSubBX, daqPipelineDepth, runNumber;
 
-	uint32_t alignBX, alignSubBX;
+
+	std::istringstream ssAlignBX (argv[1]);
 	if (!(ssAlignBX >> alignBX))
 	{
 		std::cout << "Invalid alignBX number" << argv[1] << '\n';
 		exit(1);
 	}
+
 	std::istringstream ssAlignSubBX (argv[2]);
 	if (!(ssAlignSubBX >> alignSubBX))
 	{
@@ -185,6 +164,19 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
+	std::istringstream ssDaqPipelineDepth (argv[3]);
+	if (!(ssDaqPipelineDepth >> daqPipelineDepth))
+	{
+		std::cout << "Invalid daqPipelineDepth number" << argv[3] << '\n';
+		exit(1);
+	}
+
+	std::istringstream ssRunNumber (argv[4]);
+	if (!(ssRunNumber >> runNumber))
+	{
+		std::cout << "Invalid runNumber" << argv[4] << '\n';
+		exit(1);
+	}
 
 	ThreadData threaddata[NUM_PHI];
 	void * ret_info[NUM_PHI];
@@ -195,17 +187,24 @@ int main(int argc, char *argv[])
 
 	align_masks = read_align_mask();
 
+	UCT2016Layer1CTP7::DAQConfig daqConfig;
+	
+
+	daqConfig.DAQDelayLineDepth = daqPipelineDepth;
+
 	for (int i = 0; i < NUM_PHI; i++)
 	{
 		threaddata[i].phi = i;
 		threaddata[i].alignBX = alignBX;
 		threaddata[i].alignSubBX = alignSubBX;
+		threaddata[i].daqConfig = daqConfig;
+		threaddata[i].run_number = runNumber;
 		threaddata[i].align_masks = align_masks[i];
 
 		if (pthread_create(&threaddata[i].thread, NULL, worker_thread, &threaddata[i]) != 0)
 		{
 			printf("Couldnt launch thread for phi %d\n", i);
-			return 1;
+			exit(1);
 		}
 	}
 
@@ -230,8 +229,8 @@ int main(int argc, char *argv[])
 		t_align_status * p_align_status;
 		p_align_status = (t_align_status * ) ret_info[i];
 
-		printf("Phi: %2d      Eta Pos:    %s        Eta Neg:    %s\n", 
-				i, p_align_status->eta_pos?"FAILURE":"SUCCESS",  p_align_status->eta_neg?"FAILURE":"SUCCESS");
+		printf("Phi: %2d      Eta Pos:    %s        Eta Neg:    %s\n",
+		       i, p_align_status->eta_pos ? "FAILURE" : "SUCCESS",  p_align_status->eta_neg ? "FAILURE" : "SUCCESS");
 		free(p_align_status);
 
 	}
@@ -240,7 +239,6 @@ int main(int argc, char *argv[])
 
 	return ret;
 }
-
 
 std::vector<t_align_masks> read_align_mask(void)
 {
@@ -295,6 +293,4 @@ std::vector<t_align_masks> read_align_mask(void)
 
 	return align_masks;
 }
-
-
 
