@@ -1,4 +1,3 @@
-
 #include <stdexcept>
 #include <stdio.h>
 #include <iostream>
@@ -9,14 +8,13 @@
 #include <limits.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <UCT2016Layer1CTP7.hh>
 #include <map>
 
 #include "tinyxml2.h"
 
 using namespace tinyxml2;
 
-#define NUM_PHI 18
+#include <UCT2016Layer1CTP7.hh>
 
 class ThreadData
 {
@@ -36,7 +34,7 @@ void *worker_thread(void *cb_threaddata)
 	UCT2016Layer1CTP7 *card = NULL;
 	try
 	{
-                 card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
+		card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
 	}
 	catch (std::runtime_error &e)
 	{
@@ -83,12 +81,12 @@ void *worker_thread(void *cb_threaddata)
 int main(int argc, char *argv[])
 {
 
-	ThreadData threaddata[NUM_PHI];
-	void * ret_info[NUM_PHI];
+	ThreadData threaddata[NUM_PHI_CARDS];
+	void * ret_info[NUM_PHI_CARDS];
 
 	int ret = 0;
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		threaddata[i].phi = i;
 
@@ -99,7 +97,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		if (pthread_join(threaddata[i].thread, (void **) (&ret_info[i])) != 0)
 		{

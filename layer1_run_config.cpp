@@ -9,14 +9,13 @@
 #include <limits.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <UCT2016Layer1CTP7.hh>
 #include <map>
+
+#include <UCT2016Layer1CTP7.hh>
 
 #include "tinyxml2.h"
 
 using namespace tinyxml2;
-
-#define NUM_PHI 18
 
 typedef struct align_masks
 {
@@ -178,8 +177,8 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	ThreadData threaddata[NUM_PHI];
-	void * ret_info[NUM_PHI];
+	ThreadData threaddata[NUM_PHI_CARDS];
+	void * ret_info[NUM_PHI_CARDS];
 
 	int ret = 0;
 
@@ -188,11 +187,11 @@ int main(int argc, char *argv[])
 	align_masks = read_align_mask();
 
 	UCT2016Layer1CTP7::DAQConfig daqConfig;
-	
+
 
 	daqConfig.DAQDelayLineDepth = daqPipelineDepth;
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		threaddata[i].phi = i;
 		threaddata[i].alignBX = alignBX;
@@ -208,7 +207,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		if (pthread_join(threaddata[i].thread, (void **) (&ret_info[i])) != 0)
 		{
@@ -223,7 +222,7 @@ int main(int argc, char *argv[])
 	}
 
 	printf("Input Link Alignment Result: \n");
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 
 		t_align_status * p_align_status;

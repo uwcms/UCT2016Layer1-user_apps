@@ -7,10 +7,9 @@
 #include <limits.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <UCT2016Layer1CTP7.hh>
 #include <map>
 
-#define NUM_PHI 18
+#include <UCT2016Layer1CTP7.hh>
 
 class ThreadData
 {
@@ -37,7 +36,7 @@ void *worker_thread(void *cb_threaddata)
 	UCT2016Layer1CTP7 *card = NULL;
 	try
 	{
-                 card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
+		card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
 	}
 	catch (std::runtime_error &e)
 	{
@@ -58,7 +57,6 @@ void *worker_thread(void *cb_threaddata)
 			return NULL;
 		}
 
-
 		sys_system_info->daq_stat          = daq_stat;
 	}
 	catch (std::exception &e)
@@ -69,7 +67,7 @@ void *worker_thread(void *cb_threaddata)
 		return NULL;
 	}
 
-		sys_system_info->phi          = threaddata->phi;
+	sys_system_info->phi          = threaddata->phi;
 
 
 	delete card;
@@ -79,18 +77,18 @@ void *worker_thread(void *cb_threaddata)
 int main(int argc, char *argv[])
 {
 
-	ThreadData threaddata[NUM_PHI];
-	void * ret_info[NUM_PHI];
+	ThreadData threaddata[NUM_PHI_CARDS];
+	void * ret_info[NUM_PHI_CARDS];
 
 	int ret = 0;
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		threaddata[i].phi = i;
 		if (pthread_create(&threaddata[i].thread, NULL, worker_thread, &threaddata[i]) != 0)
 		{
 			printf("Couldnt launch thread for phi %d\n", i);
-			return 1; 
+			return 1;
 		}
 	}
 
@@ -101,7 +99,7 @@ int main(int argc, char *argv[])
 	printf("|-------------------------------------------------------------------------------------------| \n");
 
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		if (pthread_join(threaddata[i].thread, (void **) (&ret_info[i])) != 0)
 		{
@@ -120,22 +118,19 @@ int main(int argc, char *argv[])
 		uint32_t phi = p_sys_system_info->phi;
 
 
-		uint32_t fifoOcc           = p_sys_system_info->daq_stat.fifoOcc;
-		uint32_t fifoOccMax               = p_sys_system_info->daq_stat.fifoOccMax;
-		uint32_t fifoEmpty                = p_sys_system_info->daq_stat.fifoEmpty;
-		uint32_t CTP77ToAMC13BP          = p_sys_system_info->daq_stat.CTP77ToAMC13BP;
-		uint32_t AMC13ToCTP7BP   = p_sys_system_info->daq_stat.AMC13ToCTP7BP;
-		uint32_t TTS   = p_sys_system_info->daq_stat.TTS;
-		uint32_t internalError   = p_sys_system_info->daq_stat.internalError;
-
-
+		uint32_t fifoOcc          = (p_sys_system_info->daq_stat.fifoOcc) / 255;
+		uint32_t fifoOccMax       = (p_sys_system_info->daq_stat.fifoOccMax) / 255;
+		uint32_t fifoEmpty        = p_sys_system_info->daq_stat.fifoEmpty;
+		uint32_t CTP77ToAMC13BP   = (p_sys_system_info->daq_stat.CTP77ToAMC13BP) / 255;
+		uint32_t AMC13ToCTP7BP    = (p_sys_system_info->daq_stat.AMC13ToCTP7BP) / 255;
+		uint32_t TTS              = p_sys_system_info->daq_stat.TTS;
+		uint32_t internalError    = p_sys_system_info->daq_stat.internalError;
 
 		printf("| %3u   |  %8u |  %8u |  %8u |  %8u |  %8u |  %8u |  %8u |\n",
 		       phi, fifoOcc, fifoOccMax, fifoEmpty, CTP77ToAMC13BP, AMC13ToCTP7BP, TTS, internalError );
 
 		//free
 	}
-
 
 	return ret;
 }

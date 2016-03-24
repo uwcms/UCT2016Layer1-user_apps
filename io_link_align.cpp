@@ -9,15 +9,14 @@
 #include <limits.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <UCT2016Layer1CTP7.hh>
 #include <map>
+
+#include <UCT2016Layer1CTP7.hh>
 
 #include "tinyxml2.h"
 
 using namespace tinyxml2;
 
-
-#define NUM_PHI 18
 
 typedef struct align_masks
 {
@@ -61,7 +60,7 @@ void *worker_thread(void *cb_threaddata)
 	UCT2016Layer1CTP7 *card = NULL;
 	try
 	{
-                 card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
+		card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
 	}
 	catch (std::runtime_error &e)
 	{
@@ -196,8 +195,8 @@ int main(int argc, char *argv[])
 	}
 
 
-	ThreadData threaddata[NUM_PHI];
-	void * ret_info[NUM_PHI];
+	ThreadData threaddata[NUM_PHI_CARDS];
+	void * ret_info[NUM_PHI_CARDS];
 
 	int ret = 0;
 
@@ -205,7 +204,7 @@ int main(int argc, char *argv[])
 
 	align_masks = read_align_mask();
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		threaddata[i].phi = i;
 		threaddata[i].alignBX = alignBX;
@@ -219,7 +218,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		if (pthread_join(threaddata[i].thread, (void **) (&ret_info[i])) != 0)
 		{
@@ -234,14 +233,14 @@ int main(int argc, char *argv[])
 	}
 
 	printf("Input Link Alignment Result: \n");
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 
 		t_align_status * p_align_status;
 		p_align_status = (t_align_status * ) ret_info[i];
 
-		printf("Phi: %2d      Eta Pos:    %s        Eta Neg:    %s\n", 
-				i, p_align_status->eta_pos?"FAILURE":"SUCCESS",  p_align_status->eta_neg?"FAILURE":"SUCCESS");
+		printf("Phi: %2d      Eta Pos:    %s        Eta Neg:    %s\n",
+		       i, p_align_status->eta_pos ? "FAILURE" : "SUCCESS",  p_align_status->eta_neg ? "FAILURE" : "SUCCESS");
 		free(p_align_status);
 
 	}
@@ -305,6 +304,4 @@ std::vector<t_align_masks> read_align_mask(void)
 
 	return align_masks;
 }
-
-
 

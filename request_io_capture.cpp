@@ -13,7 +13,6 @@
 
 #include <UCT2016Layer1CTP7.hh>
 
-
 #include "tinyxml2.h"
 
 using namespace tinyxml2;

@@ -12,8 +12,6 @@
 
 #include <UCT2016Layer1CTP7.hh>
 
-#define NUM_PHI 18
-
 const char * const   Cal_iEta[] =
 {
 	"  EC | 01-02",     // Link #  0
@@ -117,7 +115,7 @@ void * worker_thread(void * cb_threaddata)
 	UCT2016Layer1CTP7 *card = NULL;
 	try
 	{
-                 card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
+		card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
 	}
 	catch (std::runtime_error &e)
 	{
@@ -170,8 +168,8 @@ void * worker_thread(void * cb_threaddata)
 int main(int argc, char *argv[])
 {
 
-	ThreadData threaddata[NUM_PHI];
-	void * ret_info[NUM_PHI];
+	ThreadData threaddata[NUM_PHI_CARDS];
+	void * ret_info[NUM_PHI_CARDS];
 
 	t_link_status * p_link_status;
 
@@ -179,7 +177,7 @@ int main(int argc, char *argv[])
 
 	int ret = 0;
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		threaddata[i].phi = i;
 		if (pthread_create(&threaddata[i].thread, NULL, worker_thread, &threaddata[i]) != 0)
@@ -189,7 +187,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		if (pthread_join(threaddata[i].thread, (void **) (&ret_info[i])) != 0)
 		{
@@ -208,7 +206,7 @@ int main(int argc, char *argv[])
 
 	t_L1_link_stat L1_link_stat = {};
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 
 		p_link_status = (t_link_status * ) ret_info[i];

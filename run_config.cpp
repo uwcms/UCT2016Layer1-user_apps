@@ -9,15 +9,13 @@
 #include <limits.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <UCT2016Layer1CTP7.hh>
 #include <map>
 
 #include "tinyxml2.h"
 
 using namespace tinyxml2;
 
-
-#define NUM_PHI 18
+#include <UCT2016Layer1CTP7.hh>
 
 typedef struct align_masks
 {
@@ -65,7 +63,7 @@ void *worker_thread(void *cb_threaddata)
 	UCT2016Layer1CTP7 *card = NULL;
 	try
 	{
-                 card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
+		card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
 	}
 	catch (std::runtime_error &e)
 	{
@@ -116,11 +114,11 @@ void *worker_thread(void *cb_threaddata)
 				return NULL;
 			}
 
-                       std::vector<uint32_t> towerMaskConfig (32, 0x000);  // by default, unmask all trigger towers, ECAL/HCAL carry 8 TTs, HF carries 11 TTs
+			std::vector<uint32_t> towerMaskConfig (32, 0x000);  // by default, unmask all trigger towers, ECAL/HCAL carry 8 TTs, HF carries 11 TTs
 
 
-                       if (!card->setInputLinkTowerMask((neg < 0), towerMaskConfig)) 
-		       {
+			if (!card->setInputLinkTowerMask((neg < 0), towerMaskConfig))
+			{
 				printf("Error with setInputLinkTowerMask for phi=%d\n", threaddata->phi);
 				threaddata->error = true;
 				delete card;
@@ -273,8 +271,8 @@ int main(int argc, char *argv[])
 	}
 
 
-	ThreadData threaddata[NUM_PHI];
-	void * ret_info[NUM_PHI];
+	ThreadData threaddata[NUM_PHI_CARDS];
+	void * ret_info[NUM_PHI_CARDS];
 
 	int ret = 0;
 
@@ -283,11 +281,11 @@ int main(int argc, char *argv[])
 	align_masks = read_align_mask();
 
 	UCT2016Layer1CTP7::DAQConfig daqConfig;
-	
+
 
 	daqConfig.DAQDelayLineDepth = daqPipelineDepth;
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		threaddata[i].phi = i;
 		threaddata[i].alignBX = alignBX;
@@ -303,7 +301,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		if (pthread_join(threaddata[i].thread, (void **) (&ret_info[i])) != 0)
 		{
@@ -318,7 +316,7 @@ int main(int argc, char *argv[])
 	}
 
 	printf("Input Link Alignment Result: \n");
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 
 		t_align_status * p_align_status;
@@ -327,7 +325,6 @@ int main(int argc, char *argv[])
 		printf("Phi: %2d      Eta Pos:    %s        Eta Neg:    %s\n",
 		       i, p_align_status->eta_pos ? "FAILURE" : "SUCCESS",  p_align_status->eta_neg ? "FAILURE" : "SUCCESS");
 		free(p_align_status);
-
 	}
 
 	printf("\n");
@@ -389,5 +386,4 @@ std::vector<t_align_masks> read_align_mask(void)
 
 	return align_masks;
 }
-
 

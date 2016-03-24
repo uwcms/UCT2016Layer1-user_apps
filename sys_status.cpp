@@ -7,10 +7,9 @@
 #include <limits.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <UCT2016Layer1CTP7.hh>
 #include <map>
 
-#define NUM_PHI 18
+#include <UCT2016Layer1CTP7.hh>
 
 class ThreadData
 {
@@ -99,12 +98,12 @@ void *worker_thread(void *cb_threaddata)
 int main(int argc, char *argv[])
 {
 
-	ThreadData threaddata[NUM_PHI];
-	void * ret_info[NUM_PHI];
+	ThreadData threaddata[NUM_PHI_CARDS];
+	void * ret_info[NUM_PHI_CARDS];
 
 	int ret = 0;
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		threaddata[i].phi = i;
 		if (pthread_create(&threaddata[i].thread, NULL, worker_thread, &threaddata[i]) != 0)
@@ -120,7 +119,7 @@ int main(int argc, char *argv[])
 	printf("|  Phi  | BX Clk Locked |    BX0 Locked |     BX0 Error | BX0 UnlckdCnt | TTC Dbl Error | TTC Sin Error |       L1A Cnt |       BX0 Cnt |   FW Build TS |     FW Uptime | \n");
 	printf("------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n");
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		if (pthread_join(threaddata[i].thread, (void **) (&ret_info[i])) != 0)
 		{
@@ -182,5 +181,4 @@ int main(int argc, char *argv[])
 
 	return ret;
 }
-
 

@@ -14,8 +14,6 @@
 
 #include <UCT2016Layer1CTP7.hh>
 
-
-
 #define CAPTURE_BX_LENGTH (162)
 
 std::string pattern_path;
@@ -39,7 +37,7 @@ void *download_thread(void *cb_threaddata)
 	UCT2016Layer1CTP7 *card = NULL;
 	try
 	{
-                 card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
+		card = new UCT2016Layer1CTP7(threaddata->phi, "CTP7phiMap.xml", UCT2016Layer1CTP7::CONNECTSTRING_PHIMAPXML);
 	}
 	catch (std::runtime_error &e)
 	{
@@ -182,7 +180,7 @@ int main(int argc, char *argv[])
 			ret = 1;
 		}
 	}
-	
+
 	return ret;
 }
 
