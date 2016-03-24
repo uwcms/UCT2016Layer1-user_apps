@@ -97,20 +97,20 @@ void *download_thread(void *cb_threaddata)
 				return NULL;
 			}
 
-	std::vector<uint32_t> tower_mask;
+			std::vector<uint32_t> tower_mask;
 
-				if (!card->getInputLinkTowerMask(neg < 0, tower_mask))
-				{
-					printf("Error reading getInputLinkTowerMask for phi=%d HF_A\n", threaddata->phi);
-					threaddata->error = true;
-					delete card;
-					return NULL;
-				}
+			if (!card->getInputLinkTowerMask(neg < 0, tower_mask))
+			{
+				printf("Error reading getInputLinkTowerMask for phi=%d HF_A\n", threaddata->phi);
+				threaddata->error = true;
+				delete card;
+				return NULL;
+			}
 
-				for (uint32_t i = 0; i < 32; i++)
-				{
-					fprintf(fd, "%s | 0x%03X \n", Cal_iEta[i], tower_mask[i]);
-				}
+			for (uint32_t i = 0; i < 32; i++)
+			{
+				fprintf(fd, "%s | 0x%03X \n", Cal_iEta[i], tower_mask[i]);
+			}
 
 
 			fclose(fd);

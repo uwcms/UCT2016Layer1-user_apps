@@ -1,4 +1,3 @@
-
 #include <stdexcept>
 #include <stdio.h>
 #include <iostream>
@@ -98,25 +97,25 @@ void *worker_thread(void *cb_threaddata)
 	{
 		for (int neg = -1; neg <= 1; neg += 2)
 		{
-			mode.waitForSyncOrbitCnt = true;
-			mode.syncOrbitCnt = threaddata->orbit + ORBITS_PER_SECOND;
-			mode.bx = threaddata->captureStartBX;
+			mode.waitForSyncOrbitCnt = true;                           // configure the capture engine so that the next capture starts at a specified orbit counter
+			mode.syncOrbitCnt = threaddata->orbit + ORBITS_PER_SECOND; // offset next capture to occure ~ 1 second later
+			mode.bx = threaddata->captureStartBX;                      // configure start BX in the capture engine
 
 			if (!card->captureSyncdInputOutputLinks((neg < 0), mode))
 			{
-				printf("Error with layer1_io_capture for phi=%d\n", threaddata->phi);
+				printf("Error with request_io_capture for phi=%d\n", threaddata->phi);
 				threaddata->error = true;
 				delete card;
 				return NULL;
 			}
 		}
 
-		sleep(WAIT_FOR_CAPTURE_DISPATCH_IN_SECONDS);
+		sleep(WAIT_FOR_CAPTURE_DISPATCH_IN_SECONDS); 
 
 	}
 	catch (std::exception &e)
 	{
-		printf("Error with layer1_io_capture from phi %d: %s\n", threaddata->phi, e.what());
+		printf("Error with request_io_capture from phi %d: %s\n", threaddata->phi, e.what());
 		threaddata->error = true;
 		delete card;
 		return NULL;
@@ -186,7 +185,7 @@ int main(int argc, char *argv[])
 		}
 		else if (threaddata[i].error)
 		{
-			printf("layer1_io_capture from phi %d returned error.\n", i);
+			printf("request_io_capture from phi %d returned error.\n", i);
 			ret = 1;
 		}
 	}
