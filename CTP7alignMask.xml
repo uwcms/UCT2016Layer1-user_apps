@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <layer1_align_mask_config>
-	 <phi_config><phi>0</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	 <phi_config><phi>1</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	 <phi_config><phi>2</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	 <phi_config><phi>3</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	 <phi_config><phi>4</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	 <phi_config><phi>5</phi><alignMaskEtaPos>0x3fff0000</alignMaskEtaPos><alignMaskEtaNeg>0x3fff0000</alignMaskEtaNeg></phi_config>
-	 <phi_config><phi>6</phi><alignMaskEtaPos>0x3fff0000</alignMaskEtaPos><alignMaskEtaNeg>0x3fff0000</alignMaskEtaNeg></phi_config>
-	 <phi_config><phi>7</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	 <phi_config><phi>8</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	 <phi_config><phi>9</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	<phi_config><phi>10</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	<phi_config><phi>11</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	<phi_config><phi>12</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	<phi_config><phi>13</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	<phi_config><phi>14</phi><alignMaskEtaPos>0x00000100</alignMaskEtaPos><alignMaskEtaNeg>0x00000100</alignMaskEtaNeg></phi_config>
-	<phi_config><phi>15</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	<phi_config><phi>16</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
-	<phi_config><phi>17</phi><alignMaskEtaPos>0x00000000</alignMaskEtaPos><alignMaskEtaNeg>0x00000000</alignMaskEtaNeg></phi_config>
+	 <phi_config><phi>0</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	 <phi_config><phi>1</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	 <phi_config><phi>2</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	 <phi_config><phi>3</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	 <phi_config><phi>4</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	 <phi_config><phi>5</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	 <phi_config><phi>6</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	 <phi_config><phi>7</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	 <phi_config><phi>8</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	 <phi_config><phi>9</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	<phi_config><phi>10</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	<phi_config><phi>11</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	<phi_config><phi>12</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	<phi_config><phi>13</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	<phi_config><phi>14</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	<phi_config><phi>15</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	<phi_config><phi>16</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
+	<phi_config><phi>17</phi><alignMaskEtaPos>0xFFFFFFFF</alignMaskEtaPos><alignMaskEtaNeg>0xFFFFFFFF</alignMaskEtaNeg></phi_config>
 </layer1_align_mask_config>
 
