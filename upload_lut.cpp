@@ -26,6 +26,7 @@ typedef struct
 {
 	std::vector<uint32_t> ecal;
 	std::vector<uint32_t> hcal;
+	std::vector<uint32_t> hf;
 } lut_data_t;
 
 std::map<int, lut_data_t> load_file(std::string path)
@@ -74,6 +75,26 @@ std::map<int, lut_data_t> load_file(std::string path)
 			lut_data[i].hcal.push_back(value);
 		}
 	}
+
+
+	getline(infile, dummyLine);
+	getline(infile, dummyLine);
+	getline(infile, dummyLine);
+	getline(infile, dummyLine);
+
+	for (int idx = 0; idx < 1024; idx++)
+	{
+
+		infile >> std::hex >> value;
+
+		for (int i = 30; i <= 41; i++)
+		{
+			infile >> std::hex >> value;
+
+			lut_data[i].hf.push_back(value);
+		}
+	}
+	
 
 	return lut_data;
 }
@@ -130,6 +151,19 @@ void *upload_thread(void *cb_threaddata)
 				                           static_cast<UCT2016Layer1CTP7::LUTiEtaIndex>( ieta ), lut_data[ieta].hcal))
 				{
 					printf("Error writing LUT HCAL RAM for phi=%d ieta=%d\n", threaddata->phi, ieta);
+					threaddata->error = true;
+					delete card;
+					return NULL;
+				}
+			}
+
+			for (int ieta = 30; ieta <= 41; ieta++)
+			{
+
+				if (!card->setInputLinkLUT(neg < 0, UCT2016Layer1CTP7::HF,
+				                           static_cast<UCT2016Layer1CTP7::LUTiEtaIndex>( ieta ), lut_data[ieta].hf))
+				{
+					printf("Error writing LUT HF RAM for phi=%d ieta=%d\n", threaddata->phi, ieta);
 					threaddata->error = true;
 					delete card;
 					return NULL;
