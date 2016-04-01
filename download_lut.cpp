@@ -11,7 +11,6 @@
 #include <UCT2016Layer1CTP7.hh>
 #include <map>
 
-#define NUM_PHI 18
 
 std::string pattern_path;
 
@@ -175,11 +174,11 @@ int main(int argc, char *argv[])
 	pattern_path = realpattern;
 	free(realpattern);
 
-	ThreadData threaddata[NUM_PHI];
+	ThreadData threaddata[NUM_PHI_CARDS];
 
 	int ret = 0;
 
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		threaddata[i].phi = i;
 		if (pthread_create(&threaddata[i].thread, NULL, download_thread, &threaddata[i]) != 0)
@@ -188,7 +187,7 @@ int main(int argc, char *argv[])
 			return 1;
 		}
 	}
-	for (int i = 0; i < NUM_PHI; i++)
+	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
 		if (pthread_join(threaddata[i].thread, NULL) != 0)
 		{
