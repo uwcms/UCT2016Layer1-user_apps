@@ -7,6 +7,7 @@ APPS =	upload_pattern \
 	download_lut \
 	translate_lut \
 	request_io_capture \
+	request_out_capture \
 	ttc_decoder_align \
 	ttc_status \
 	daq_status \
