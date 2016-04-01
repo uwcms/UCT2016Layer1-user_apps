@@ -21,7 +21,6 @@ public:
 	ThreadData() : phi(0), error(false) { };
 };
 
-
 typedef struct
 {
 	std::vector<uint32_t> ecal;
@@ -76,7 +75,6 @@ std::map<int, lut_data_t> load_file(std::string path)
 		}
 	}
 
-
 	getline(infile, dummyLine);
 	getline(infile, dummyLine);
 	getline(infile, dummyLine);
@@ -95,7 +93,6 @@ std::map<int, lut_data_t> load_file(std::string path)
 		}
 	}
 	
-
 	return lut_data;
 }
 
@@ -109,7 +106,7 @@ void *upload_thread(void *cb_threaddata)
 	{
 		char namepart[64];
 
-		snprintf(namepart, 64, "LUT_Phi_00_Eta_Plus.txt");
+		snprintf(namepart, 64, "Layer1_LUT.txt");
 		lut_data = load_file(pattern_path + "/" + namepart);
 	}
 	catch (std::runtime_error &e)
