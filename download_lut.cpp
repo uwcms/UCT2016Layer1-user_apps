@@ -1,4 +1,3 @@
-
 #include <stdexcept>
 #include <stdio.h>
 #include <iostream>
@@ -8,11 +7,11 @@
 #include <limits.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <UCT2016Layer1CTP7.hh>
 #include <map>
 
+#include <UCT2016Layer1CTP7.hh>
 
-std::string pattern_path;
+std::string lut_file_path;
 
 class ThreadData
 {
@@ -39,14 +38,20 @@ void *download_thread(void *cb_threaddata)
 		return NULL;
 	}
 
+        // std map containesr to store complete LUT info written into a file
+	// 28x512 uint32_t for ECAL (iEta=[1-28],  input data=[1-bit FG + 8-bit ET])
+	// 28x512 uint32_t for HCAL (iEta=[1-28],  input data=[1-bit FB + 8-bit ET])
+	// 11x1024 uint32_t for HF  (iEta=[30-41], input data=[2-bit FB + 8-bit ET])
 	std::map<int, std::vector<uint32_t> > ecal;
 	std::map<int, std::vector<uint32_t> > hcal;
 	std::map<int, std::vector<uint32_t> > hf;
 
 	try
 	{
+		// Process Eta + and - sides		
 		for (int neg = -1; neg <= 1; neg += 2)
 		{
+			//Read from CTP7s ECAL and HCAL Barrel and Endcap iEta[1-28] LUTs			
 			for (int ieta = 1; ieta <= 28; ieta++)
 			{
 				if (!card->getInputLinkLUT(neg < 0, UCT2016Layer1CTP7::ECAL,
@@ -67,8 +72,7 @@ void *download_thread(void *cb_threaddata)
 					return NULL;
 				}
 			}
-
-////
+			//Read from CTP7s HF iEta[30-41] LUTs
 			for (int ieta = 30; ieta <= 41; ieta++)
 			{
 				if (!card->getInputLinkLUT(neg < 0, UCT2016Layer1CTP7::HF,
@@ -80,8 +84,6 @@ void *download_thread(void *cb_threaddata)
 					return NULL;
 				}
 			}
-
-////
 		}
 	}
 	catch (std::exception &e)
@@ -96,7 +98,7 @@ void *download_thread(void *cb_threaddata)
 	{
 		char filename[64];
 		snprintf(filename, 64, "LUT_Phi_%02u_Eta_%s.txt", threaddata->phi, (neg < 0 ? "Minus" : "Plus"));
-		FILE *fd = fopen((pattern_path + "/" + filename).c_str(), "w");
+		FILE *fd = fopen((lut_file_path + "/" + filename).c_str(), "w");
 		if (!fd)
 		{
 			printf("Error writing output file %s\n", filename);
@@ -171,7 +173,7 @@ int main(int argc, char *argv[])
 		printf("Unable to access pattern output directory.\n");
 		return 1;
 	}
-	pattern_path = realpattern;
+	lut_file_path = realpattern;
 	free(realpattern);
 
 	ThreadData threaddata[NUM_PHI_CARDS];
