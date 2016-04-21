@@ -94,10 +94,9 @@ int main(int argc, char *argv[])
 
 	printf("\n\n");
 
-	printf("|-------------------------------------------------------------------------------------------| \n");
-	printf("|  Phi  |   fifoOcc | fifoOcc M | fifoEmpty |   CTP7 BP |  AMC13 BP |      TTS  |  Intr Err |\n");
-	printf("|-------------------------------------------------------------------------------------------| \n");
-
+	printf("|---------------------------------------------------------------------------------------------------------| \n");
+	printf("|  Phi  |   fifoOcc | fifoOcc M | fifoEmpty |   CTP7 BP |  AMC13 BP |      TTS  |  Intr Err | amcCoreReady|\n");
+	printf("|---------------------------------------------------------------------------------------------------------| \n");
 
 	for (int i = 0; i < NUM_PHI_CARDS; i++)
 	{
@@ -125,9 +124,10 @@ int main(int argc, char *argv[])
 		uint32_t AMC13ToCTP7BP    = (p_sys_system_info->daq_stat.AMC13ToCTP7BP) / 255;
 		uint32_t TTS              = p_sys_system_info->daq_stat.TTS;
 		uint32_t internalError    = p_sys_system_info->daq_stat.internalError;
+		uint32_t amcCoreReady    = p_sys_system_info->daq_stat.amcCoreReady;
 
-		printf("| %3u   |  %8u |  %8u |  %8u |  %8u |  %8u |  %8u |  %8u |\n",
-		       phi, fifoOcc, fifoOccMax, fifoEmpty, CTP77ToAMC13BP, AMC13ToCTP7BP, TTS, internalError );
+		printf("| %3u   |  %8u |  %8u |  %8u |  %8u |  %8u |  %8u |  %8u |  %8u   |\n",
+		       phi, fifoOcc, fifoOccMax, fifoEmpty, CTP77ToAMC13BP, AMC13ToCTP7BP, TTS, internalError, amcCoreReady );
 
 		//free
 	}

@@ -38,7 +38,7 @@ void *download_thread(void *cb_threaddata)
 		return NULL;
 	}
 
-        // std map containesr to store complete LUT info written into a file
+        // std map container to store complete LUT info written into a file
 	// 28x512 uint32_t for ECAL (iEta=[1-28],  input data=[1-bit FG + 8-bit ET])
 	// 28x512 uint32_t for HCAL (iEta=[1-28],  input data=[1-bit FB + 8-bit ET])
 	// 11x1024 uint32_t for HF  (iEta=[30-41], input data=[2-bit FB + 8-bit ET])
