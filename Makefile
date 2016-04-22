@@ -32,7 +32,7 @@ APPS =	upload_pattern \
 
 LIBS_IPATH = -I../UCT2016Layer1CTP7Client -I../UCT2016Layer1CTP7Client/rpcsvc_client_dev
 LIBS_LPATH = -L../UCT2016Layer1CTP7Client -L../UCT2016Layer1CTP7Client/rpcsvc_client_dev
-LIBS       = -lpthread -lUCT2016Layer1CTP7 -lwiscrpcsvc
+LIBS       = -lpthread -lUCT2016Layer1CTP7 -lwiscrpcsvc -lz
 
 all: $(addprefix $(BIN)/, $(APPS))
 
