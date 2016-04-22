@@ -41,7 +41,7 @@ $(BIN)/%: %.cpp ../UCT2016Layer1CTP7Client/libUCT2016Layer1CTP7.so
 	g++ $(CCOPTS) -o $@ $< ../UCT2016Layer1CTP7Client/tinyxml2.o $(LIBS_IPATH) $(LIBS_LPATH) $(LIBS)
 
 ../UCT2016Layer1CTP7Client/libUCT2016Layer1CTP7.so: ../UCT2016Layer1CTP7Client/Makefile $(filter-out ../UCT2016Layer1CTP7Client/libUCT2016Layer1CTP7.so, $(wildcard ../UCT2016Layer1CTP7Client/*.cpp))
-	make -C ../UCT2016Layer1CTP7Client install
+	make -C ../UCT2016Layer1CTP7Client
 
 ../UCT2016Layer1CTP7Client/Makefile: 
 	svn co svn+ssh://svn.cern.ch/reps/cactus/trunk/cactusprojects/calol1/extern/UCT2016Layer1CTP7Client ../UCT2016Layer1CTP7Client
