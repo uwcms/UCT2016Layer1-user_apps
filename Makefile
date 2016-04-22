@@ -41,15 +41,10 @@ $(BIN)/%: %.cpp client-library/libUCT2016Layer1CTP7.so
 	g++ $(CCOPTS) -o $@ $< client-library/tinyxml2.o $(LIBS_IPATH) $(LIBS_LPATH) $(LIBS)
 
 client-library/libUCT2016Layer1CTP7.so: client-library/Makefile $(filter-out client-library/libUCT2016Layer1CTP7.so, $(wildcard client-library/*.cpp))
-	make -C client-library
+	make -C client-library install
 
-client-library/Makefile: UCT2016Layer1CTP7.tbz2
-	rm -rf client-library
-	tar -xjf $< client-library
-	@touch -c $@
-
-UCT2016Layer1CTP7.tbz2:
-	$(error Please place the UCT2016Layer1CTP7.tbz2 package in this directory before attempting to build)
+client-library/Makefile: 
+	svn co svn+ssh://svn.cern.ch/reps/cactus/trunk/cactusprojects/calol1/extern/UCT2016Layer1CTP7Client client-library
 
 clean:
 	rm -rf $(BIN)
@@ -58,4 +53,3 @@ distclean: clean
 	rm -rf client-library
 
 .PHONY: clean distclean
-
