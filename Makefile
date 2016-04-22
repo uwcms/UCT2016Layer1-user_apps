@@ -30,26 +30,23 @@ APPS =	upload_pattern \
 	beam_splash_ECAL_iEta1 \
 	beam_splash_HCAL_iEta1
 
-LIBS_IPATH = -Iclient-library -Iclient-library/rpcsvc_client_dev
-LIBS_LPATH = -Lclient-library -Lclient-library/rpcsvc_client_dev
+LIBS_IPATH = -I../UCT2016Layer1CTP7Client -I../UCT2016Layer1CTP7Client/rpcsvc_client_dev
+LIBS_LPATH = -L../UCT2016Layer1CTP7Client -L../UCT2016Layer1CTP7Client/rpcsvc_client_dev
 LIBS       = -lpthread -lUCT2016Layer1CTP7 -lwiscrpcsvc
 
 all: $(addprefix $(BIN)/, $(APPS))
 
-$(BIN)/%: %.cpp client-library/libUCT2016Layer1CTP7.so
+$(BIN)/%: %.cpp ../UCT2016Layer1CTP7Client/libUCT2016Layer1CTP7.so
 	@mkdir -p $(dir $@)
-	g++ $(CCOPTS) -o $@ $< client-library/tinyxml2.o $(LIBS_IPATH) $(LIBS_LPATH) $(LIBS)
+	g++ $(CCOPTS) -o $@ $< ../UCT2016Layer1CTP7Client/tinyxml2.o $(LIBS_IPATH) $(LIBS_LPATH) $(LIBS)
 
-client-library/libUCT2016Layer1CTP7.so: client-library/Makefile $(filter-out client-library/libUCT2016Layer1CTP7.so, $(wildcard client-library/*.cpp))
-	make -C client-library install
+../UCT2016Layer1CTP7Client/libUCT2016Layer1CTP7.so: ../UCT2016Layer1CTP7Client/Makefile $(filter-out ../UCT2016Layer1CTP7Client/libUCT2016Layer1CTP7.so, $(wildcard ../UCT2016Layer1CTP7Client/*.cpp))
+	make -C ../UCT2016Layer1CTP7Client install
 
-client-library/Makefile: 
-	svn co svn+ssh://svn.cern.ch/reps/cactus/trunk/cactusprojects/calol1/extern/UCT2016Layer1CTP7Client client-library
+../UCT2016Layer1CTP7Client/Makefile: 
+	svn co svn+ssh://svn.cern.ch/reps/cactus/trunk/cactusprojects/calol1/extern/UCT2016Layer1CTP7Client ../UCT2016Layer1CTP7Client
 
 clean:
 	rm -rf $(BIN)
 
-distclean: clean
-	rm -rf client-library
-
-.PHONY: clean distclean
+.PHONY: clean
