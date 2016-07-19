@@ -26,9 +26,7 @@ APPS =	upload_pattern \
 	download_tower_mask \
 	request_pattern_capture \
 	passthrough_configurator \
-	input_playback_configurator \
-	beam_splash_ECAL_iEta1 \
-	beam_splash_HCAL_iEta1
+	input_playback_configurator
 
 LIBS_IPATH = -I../UCT2016Layer1CTP7Client -I../UCT2016Layer1CTP7Client/rpcsvc_client_dev
 LIBS_LPATH = -L../UCT2016Layer1CTP7Client -L../UCT2016Layer1CTP7Client/rpcsvc_client_dev
