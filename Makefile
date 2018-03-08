@@ -5,6 +5,7 @@ APPS =	upload_pattern \
 	download_pattern \
 	upload_lut \
 	download_lut \
+	download_lut2s \
 	translate_lut \
 	request_io_capture \
 	request_out_capture \
