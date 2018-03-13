@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer1_hw_config>
+	<phi_config phi="0"><board_address>amc-s2e10-33-08</board_address></phi_config>
+	<phi_config phi="1"><board_address>amc-s2e10-33-09</board_address></phi_config>
+	<phi_config phi="2"><board_address>amc-s2e10-33-11</board_address></phi_config>
+	<phi_config phi="3"><board_address>amc-s2e10-46-02</board_address></phi_config>
+	<phi_config phi="4"><board_address>amc-s2e10-46-03</board_address></phi_config>
+	<phi_config phi="5"><board_address>amc-s2e10-46-05</board_address></phi_config>
+	<phi_config phi="6"><board_address>amc-s2e10-46-08</board_address></phi_config>
+	<phi_config phi="7"><board_address>amc-s2e10-46-09</board_address></phi_config>
+	<phi_config phi="8"><board_address>amc-s2e10-46-11</board_address></phi_config>
+	<phi_config phi="9"><board_address>amc-s2e10-20-02</board_address></phi_config>
+	<phi_config phi="10"><board_address>amc-s2e10-20-03</board_address></phi_config>
+	<phi_config phi="11"><board_address>amc-s2e10-20-05</board_address></phi_config>
+	<phi_config phi="12"><board_address>amc-s2e10-20-08</board_address></phi_config>
+	<phi_config phi="13"><board_address>amc-s2e10-20-09</board_address></phi_config>
+	<phi_config phi="14"><board_address>amc-s2e10-20-11</board_address></phi_config>
+	<phi_config phi="15"><board_address>amc-s2e10-33-02</board_address></phi_config>
+	<phi_config phi="16"><board_address>amc-s2e10-33-03</board_address></phi_config>
+	<phi_config phi="17"><board_address>amc-s2e10-33-05</board_address></phi_config>
+</layer1_hw_config>
