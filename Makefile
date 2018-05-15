@@ -1,10 +1,11 @@
-CCOPTS = -ggdb -Wall -DNUM_PHI_CARDS=18
+CCOPTS = -ggdb -std=c++0x -Wall -DNUM_PHI_CARDS=18
 BIN=bin
 
 APPS =	upload_pattern \
 	download_pattern \
 	upload_lut \
 	download_lut \
+	optical_power \
 	download_lut2s \
 	translate_lut \
 	request_io_capture \
