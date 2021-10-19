@@ -13,11 +13,11 @@ APPS =	upload_pattern \
 	ttc_decoder_align \
 	ttc_status \
 	daq_status \
-        sys_status \
+    sys_status \
 	io_link_align \
 	run_config \
 	reset_link_errors \
-        check_alignment	\
+    check_alignment	\
 	input_link_status \
 	hard_reset \
 	tmt_cycle_config \
@@ -39,9 +39,14 @@ all: $(addprefix $(BIN)/, $(APPS))
 $(BIN)/%: %.cpp calol1/extern/UCT2016Layer1CTP7Client/libUCT2016Layer1CTP7.so
 	@mkdir -p $(dir $@)
 	g++ $(CCOPTS) -o $@ $< calol1/extern/UCT2016Layer1CTP7Client/tinyxml2.o $(LIBS_IPATH) $(LIBS_LPATH) $(LIBS)
+	cp ./calol1/extern/UCT2016Layer1CTP7Client/libUCT2016Layer1CTP7.so $(BIN)
+	cp ./calol1/extern/UCT2016Layer1CTP7Client/rpcsvc_client_dev/wiscrpcsvc.so $(BIN)
+	cp ./calol1/extern/UCT2016Layer1CTP7Client/rpcsvc_client_dev/libwiscrpcsvc.so $(BIN)
+	cp env.sh $(BIN)
 
 calol1/extern/UCT2016Layer1CTP7Client/libUCT2016Layer1CTP7.so: calol1/extern/UCT2016Layer1CTP7Client/Makefile $(filter-out calol1/extern/UCT2016Layer1CTP7Client/libUCT2016Layer1CTP7.so, $(wildcard calol1/extern/UCT2016Layer1CTP7Client/*.cpp))
 	make -C calol1/extern/UCT2016Layer1CTP7Client
+
 
 calol1/extern/UCT2016Layer1CTP7Client/Makefile: 
 	git clone ssh://git@gitlab.cern.ch:7999/cms-cactus/projects/calol1.git 
